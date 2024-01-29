@@ -1,0 +1,15 @@
+\begin{thebibliography}{1}
+
+\bibitem{agresti2002}
+Alan Agresti.
+\newblock {\em {An Introduction to Categorical Data Analysis}}.
+\newblock Wiley Series in Probability and Statistics. John Wiley \& Sons,
+  second edition, 2002.
+
+\bibitem{nam1995}
+Jun-Mo Nam.
+\newblock {Confidence limits for the ratio of two binomial proportions based on
+  likelihood scores: non-iterative method}.
+\newblock {\em Biometrical Journal}, 37(3):375--379, 1995.
+
+\end{thebibliography}
