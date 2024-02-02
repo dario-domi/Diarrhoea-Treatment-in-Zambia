@@ -1,8 +1,6 @@
 # Folders to be ignored
 Data/
-Documents/Literature/
-Documents/Admin\ Documents/
-Slides_and_Videos/
+Documents/
 
 # Files to be ignored
 Odds.png
