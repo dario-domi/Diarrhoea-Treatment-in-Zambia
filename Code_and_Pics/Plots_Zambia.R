@@ -6,7 +6,7 @@
 ######################################################################
 
 # Run main program to create the variables needed
-# source("Analysis_Zambia.R")
+source("Analysis_Zambia.R")
 
 ################################################################
 #
@@ -55,7 +55,7 @@ plot_agglomerated_props <- function(){
   
   # Set black-ish background and margins
   bgcol <- rgb(61, 55, 72, maxColorValue = 255)
-  par(bg = bgcol, mar = c(4, 6, 4, 3))
+  par(bg = bgcol, mar = c(4, 6, 4, 1))
   
   ############   ACTUAL PLOT   #############
   
@@ -105,6 +105,9 @@ plot_agglomerated_props <- function(){
   mtext("Overall Proportion of CTC", side = 3, font=3, col = "white", line = 0.7, cex=2)
 }
 
+#par(mfrow=c(1,1))
+#plot_agglomerated_props()
+
 # SAVE THE PLOT
 pdf(file = "Pictures/Overall_Proportions.pdf",      # Specify figure size and path
     width = 10, # The width of the plot in inches
@@ -138,7 +141,7 @@ dev.off()                                           # Save plot
 
 ###############################################################
 #
-#           BARPLOT FOR AGGLOMERATED PROPORTIONS
+#           BARPLOT FOR SINGLE-CENTRE PROPORTIONS
 #
 ###############################################################
 
@@ -252,7 +255,6 @@ lwr <- 100*prop_diff_CI$conf.int[1]
 mid <- 100*prop_diff_CI$estimate
 upr <- 100*prop_diff_CI$conf.int[2]
 
-
 plot_diff_CI <- function(){
   
   bgcol <- rgb(61, 55, 72, maxColorValue = 255)
@@ -260,7 +262,7 @@ plot_diff_CI <- function(){
   
   par(bg = bgcol,
       #mai=c(0.4, 0.5, 0.4, 2), # small bottom&top margins
-      mai=c(0.8, 0.5, 0.8, 2), # This leaves "large" bottom&top margins
+      mai=c(0.8, 0.5, 0.8, 2), # This leaves "large" bottom&top margins (old right margin=2)
       mgp=c(1,0.5,0)) # agjust mgp[2] for distance between axis and numbers
 
   # Plot of single point (mid estimate)
@@ -287,23 +289,15 @@ plot_diff_CI <- function(){
        col.axis = gray(0.95))
   
   # y label
-  #mtext(text = "   95% CI\n       for \n difference\n  between\nproportions\n   of CTC", cex=1.3,
-  mtext(text = " Difference\n  between\nproportions\n   of CTC", 
-        cex=1.3, side = 4, at = 10, las = 1,
-        line = 3, col = gray(.95))
+  mtext(text = "   95% CI\n       for \n difference\n  between\nproportions\n   of CTC",
+  #mtext(text = " Difference\n  between\nproportions\n   of CTC", 
+        cex=1.15, side = 4, at = 0, las = 1,
+        line = 3.7, col = gray(.95))
 }
 
-#par(mfrow=c(1,1))
-plot_diff_CI()
+#plot_diff_CI()
 
-
-mat_layout <- matrix(c(1,2), nrow = 1)
-layout(mat = mat_layout, widths = c(2,1))
-plot_agglomerated_props()
-plot_diff_CI()
-
-
-
+# SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
 pdf(file = "Pictures/Overall_Difference_Proportions.pdf",          # Specify figure size and path
     width = 10, # The width of the plot in inches
     height = 6)

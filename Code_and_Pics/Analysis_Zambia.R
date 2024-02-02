@@ -218,3 +218,72 @@ for (i in 1:n){
   props_HC_17[i, c("lwr", "upr")] <- as.list(100*ci)
 }
 
+
+################################################################
+
+
+# odds ration interpretation: pag 104 of Agresti
+
+# we test for conditional independence of correct treatment and introduction of#
+# the co-pack, controlling for the different health centres
+
+
+###############################################################
+
+###############################################################
+
+
+#############    COCHRAN-MANTEL-HAENSZEL TEST    #############
+
+library(magrittr)
+
+# CREATE DATA FRAME WITH COUNTS FOR EACH COMBINATION OF 
+# (centre, copack(Y/N), correct_treatment(Y/N))
+
+# Prepare empty dataframe
+n <- nrow(df16)
+Treated_Cases <- data.frame(RHC     = rep(   df16 %>% pull(RHC) , each=4),
+                            Co_pack = rep( c("Y", "Y", "N", "N"), n),
+                            Correct = rep( c("Y", "N", "Y", "N"), n),
+                            Count   = as.numeric(rep(NA, 4*n))
+                            )
+
+# Mutate each column into the corresponding factor
+Treated_Cases %<>% mutate(RHC     = factor(RHC, levels = unique(RHC)),
+                          Co_pack = factor(Co_pack, levels = unique(Co_pack)),
+                          Correct = factor(Correct, levels = unique(Correct))
+                          )
+
+# Populate the dataframe, looping through health centers and before/after co-pack
+for (hc in levels(Treated_Cases$RHC)){ # loop over health centers
+  for (cp in c("Y", "N")){               # loop over with/without co-pack
+    
+    # Select appropriate dataframe according to value of cp (co-pack)
+    if (cp=="Y") df <- df17
+    else df <- df16
+    
+    # Extract values of CTC and not-CTC
+    vals <- df %>% filter(RHC==hc) %>%
+                   summarise(correct_treat, tot-correct_treat) %>%
+                   as.numeric()
+    
+    # Assign vals to the appropriate position in HC_counts$Counts
+    Treated_Cases %<>% mutate(Count = replace(Count, 
+                                              RHC==hc & Co_pack==cp, 
+                                              vals) )
+  }
+}
+
+CTC_Table <- xtabs(Count ~ Correct + Co_pack + RHC, data=Treated_Cases)
+
+
+# PERFORM COCHRAN-MANTEL-HAENSZEL TEST
+mantelhaen.test(CTC_Table, alternative = "g")
+
+
+
+
+
+
+
+
