@@ -1,0 +1,10 @@
+# Folders to be ignored
+Data/
+Documents/Literature/
+Documents/Admin\ Documents/
+Slides_and_Videos/
+
+# Files to be ignored
+Odds.png
+*.txt
+*Copy.pdf
