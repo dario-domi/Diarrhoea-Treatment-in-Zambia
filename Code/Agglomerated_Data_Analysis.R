@@ -248,5 +248,5 @@ diffscoreci(x1, n1, x2, n2, conf.level = 0.95) # (0.3468, 0.5073)
 
 # a random line
 # one more random line
-
+# two more random lines
 ############################################################################
