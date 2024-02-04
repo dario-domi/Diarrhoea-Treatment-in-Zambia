@@ -247,5 +247,6 @@ diffscoreci(x1, n1, x2, n2, conf.level = 0.95) # (0.3468, 0.5073)
 #https://influentialpoints.com/Training/confidence_intervals_of_risk_ratio_odds_ratio_and_rate_ratio-principles-properties-assumptions.htm
 
 # a random line
+# one more random line
 
 ############################################################################
