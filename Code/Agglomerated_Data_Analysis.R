@@ -27,8 +27,8 @@
 #    INTERACTIVE QUESTION 
 
 # Ask the user if they want results to be printed to output
-cat("Do you want to a summary of the analysis results",
-    "to be printed to output? (y/n)\n")
+cat("Do you want summarised results of the aggregated analyses",
+    "to be shown? (y/n)\n")
 answer <- readline()
 
 
@@ -200,7 +200,7 @@ round(rateCI95$conf.int, 2)
 round(rateCI99$conf.int, 2)
 
 # Print to std output: Rate Ratio
-s <- sprintf("Rate ratio between proportions: %.2f (%.2f, %.2f)",
+s <- sprintf("Rate ratio between proportions: %.2f (%.2f, %.2f)\n",
              p2/p1, rateCI95$conf.int[1], rateCI95$conf.int[2]) # 1.98 ()
 if (answer=="y") cat(s)
 
