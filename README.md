@@ -1,2 +1,2 @@
 # Project Overview
-Sample text
+Sample text to be completed
