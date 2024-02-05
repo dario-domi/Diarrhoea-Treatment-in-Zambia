@@ -1,4 +1,4 @@
-# Ensuring successful diarrhoea treatment in Zambian children via co-packaging
+# Ensuring the success of diarrhoea treatment in Zambian children via co-packaging
 
 
 ## Project Background
@@ -13,7 +13,7 @@ The project is a collaboration between myself and the UK charity [ColaLife](http
 The project is concerned with the statistical assessment of the effect of co-packaging on the correct &ndash; and often life-saving &ndash; treatment of diarrhoea for Zambian children. More details below.
  
 
-## Brief Project Overview
+## Project Overview
 
 Diarrhoea is still a leading cause of child mortality across developing regions of the world. 
 A simple and effective treatment, widely recognised to reduce child mortality, 
@@ -26,7 +26,7 @@ The charity ColaLife has introduced a single pack (the _co-pack_) in Zambia, con
 This collaboration aism to investigate statistically whether a significantly higher proportion of children have been treated correctly (_i.e._, with both ORS and zinc) following the co-pack introduction.
 
 
-## Documents in the Repo
+## Repository Structure
    This repository contains the R code and documents produced by myself in relation to the above project.
    * **Folder Code**: R code to perform the statistical analyses of the project and produce the figures. Data not uploaded for privacy reasons.
    * **Folder Report**: Report with the results of the (in-progress) analyses. Soon taking the form of a manuscript to be submitted for peer-review.
