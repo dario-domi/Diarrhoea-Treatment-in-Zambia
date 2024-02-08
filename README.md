@@ -14,6 +14,14 @@ The project is a collaboration between myself and the UK charity [ColaLife](http
 The project is concerned with the statistical assessment of the effect of co-packaging on the correct &ndash; and often life-saving &ndash; treatment of diarrhoea for Zambian children. More details below.
 
 
+</br>
+</br>
+<p align="center">
+<img src='Pictures/Logos/Co-Pack.jpg' width='400'>
+</p>
+</br>
+
+
 ## Project Overview
 
 Diarrhoea is a leading cause of child mortality across developing regions of the world. 
@@ -22,16 +30,13 @@ is given by the parallel administration of two elements: Oral Rehidratations Sal
 
 In remote regions of the world, even though both ORS and zinc may be available at a medicine-dispensing centre, only either of the two (or none at all) may be given as treatment, _e.g._ due to lack of medical knowledge of the dispensing person.
 
-In Zambia, the charity ColaLife has designed and introduced a _single_ pack containing both ORS and zinc: the ***co-pack***.
-Many more details on the decade-long story, including the induced change on WHO guidelines for diarrhoea treatment, can be read [here](https://www.colalife.org/). 
+In Zambia, the charity ColaLife has designed and introduced a _single_ pack containing both ORS and zinc: the ***co-pack***.[^1]
 The charity has also gathered data on the medicines administered by different health centres as diarrhoea treatment, both *before* (Oct 2016) and *after* (Oct 2017) the co-pack introduction.
 
 <ins>**Objective**</ins>:
 This collaboration uses the above data to investigate whether a significantly higher proportion of children have been treated correctly (_i.e._, with both ORS and zinc) following the co-pack introduction.
 
-<!---
-[^1]: Many more details on the decade-long story, including the induced change on WHO guidelines for diarrhoea treatment, can be read [here](https://www.colalife.org/). 
---->
+[^1]: Many more details on the decade-long story, including the induced change on WHO guidelines for diarrhoea treatment, can be read [here](https://www.colalife.org/2019/07/09/success-who-adds-co-packaged-ors-and-zinc-to-its-essential-medicines-for-children/). 
 
 ***
 
