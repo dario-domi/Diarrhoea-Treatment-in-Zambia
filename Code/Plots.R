@@ -19,8 +19,8 @@ picpath <- "../Pictures/"
 
 # Bar colors
 fill_before <- "turquoise1"
+border_before <- "deepskyblue1"
 fill_after <- "lightgreen"
-border_before <- "cyan3"
 border_after <- "mediumseagreen"
 
 # Two versions of the plot are provided. One is simple, obtained through 
@@ -105,7 +105,7 @@ plot_agglomerated_props <- function(){
         line = 1.3, col = gray(.95))
   
   # y label
-  mtext("Overall Proportion of CTC", side = 3, font=3, col = "white", line = 0.7, cex=2)
+  mtext("Overall Proportion of CDCs", side = 3, font=3, col = "white", line = 0.7, cex=2)
 }
 
 
@@ -115,29 +115,6 @@ pdf(file = paste0(picpath, "Overall_Proportions.pdf"),  # Specify figure size an
     height = 6)
 plot_agglomerated_props()                               # Make plot
 dev.off()                                               # Save plot
-
-
-
-"firebrick3"
-"brown3"
-"orangered3"
-"coral"
-
-"forestgreen"
-"mediumseagreen"
-"palegreen1"
-"lightgreen"
-"aquamarine1"
-
-"dodgerblue4"
-"navy"
-"mediumorchid4"
-
-"turquoise1"
-"lightskyblue"
-"lightskyblue1"
-"cadetblue1"
-"slategray2"
 
 
 ###############################################################
@@ -209,13 +186,14 @@ plot_HC_props <- function(){
          col = border_after, lwd = 2, 
          angle = 90, length = 0.05, code=3)
   
-  # x labels
-  mtext(text = rownames(props_HC_16), cex=1.3,
+  # x labels (split each facility name into two lines)
+  name <- rownames(props_HC_16)
+  mtext(text = gsub(" ", "\n", name), cex=1.25,
         side = 1, at = xvals, las = 1,
-        line = 0.25, col = gray(.95))
+        line = 1.3, col = gray(.95))
   
-  # y label
-  mtext("Proportion of CTC by Health Centre", 
+  # Title
+  mtext("Proportion of CDCs by Facility", 
         side = 3, font=3, col = "white", line = 0.7, cex=2)
   
   # Legend
@@ -236,12 +214,6 @@ pdf(file = paste0(picpath, "HC_Proportions.pdf"),  # Specify figure size and pat
     height = 6)
 plot_HC_props()                                    # Make plot
 dev.off()                                          # Save plot
-
-
-# Alternative legend (coloured background)
-#        bty = "o",  # no box
-#        bg='lightgoldenrodyellow')
-#        #inset=0.1, lwd=3.5, bg='lightblue', box.lty = 0
 
 
 
@@ -289,14 +261,23 @@ plot_diff_CI <- function(){
        labels = paste0(seq(-100, 100, 20), "%"),
        col.axis = gray(0.95))
   
-  # y label
-  mtext(text = "   95% CI\n       for \n difference\n  between\nproportions\n   of CTC",
-  #mtext(text = " Difference\n  between\nproportions\n   of CTC", 
-        cex=1.15, side = 4, at = 0, las = 1,
-        line = 3.7, col = gray(.95))
+  # y label (on different lines, spaces from each other)
+  label <- list("   95% CI", 
+                "       for", 
+                " difference", 
+                "  between", 
+                "proportions", 
+                "  of CDCs")
+  L <- length(label)           # number of lines in ylabel
+  levs <- (L-1):0 - (L-1)/2    # the integer "levels" at which each line of text is written
+  space <- 13.5                  # space between two lines
+  for (i in 1:L)
+    mtext(text = label[[i]], at = space*levs[i],
+          cex=1.15, side = 4, las = 1,
+          line = 3.7, col = gray(.95))
+  
 }
 
-#plot_diff_CI()
 
 # SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
 pdf(file = paste0(picpath, "Overall_Difference_Proportions.pdf"),
@@ -309,6 +290,57 @@ plot_agglomerated_props()
 plot_diff_CI()
 dev.off()
 
+
+
+###############################################################
+#
+#     FOREST PLOT FOR ODDS RATIOS
+#
+###############################################################
+
+centre <- 2
+fisher.test(CDC_Table[,,centre])
+
+
+library(forestplot)
+
+base_data <- tibble(mean  = c(0.578, 0.165, 0.246, 0.700, 0.348, 0.139, Inf),
+                    lower = c(0.372, 0.018, 0.072, 0.333, 0.083, 0.016, 0.365),
+                    upper = c(0.898, 1.517, 0.833, 1.474, 1.455, 1.209, Inf),
+                    facility = c("Auckland", "Block", "Doran", "Gamsu",
+                              "Morrison", "Papageorgiou", "Tauesch"),
+                    OR = c("0.58", "0.16", "0.25", "0.70", "0.35", "0.14", "1.02"),
+                    empty = rep(NA, 7)
+                    )
+
+my_ticks <- log(c(1,2,4,8,16))
+attr(my_ticks, "labels") <- c("a", "b", "cc", "d", "ee")
+
+# Forest plot
+OR_data |>
+  forestplot(labeltext = c(facility, CDC16, CDC17, empty, OR),
+             clip = c(0.1, 1000),
+             xlog = T,
+             xticks = my_ticks
+             ) |>
+  fp_set_style(box = "royalblue",
+               line = "deepskyblue2",
+               summary = "royalblue") |> 
+  fp_add_header(facility = "Facility",
+                CDC16 = "CDCs\n2016",
+                CDC17 = "CDCs\n2017",
+                empty = NA,
+                OR = "OR") |>
+  fp_append_row(mean  = 3,
+                lower = 2,
+                upper = 4.5,
+                facility = "Aggregated",
+                CDC16 = "a",
+                CDC17 = "b",
+                empty=NA,
+                OR = "3",
+                is.summary = TRUE) |> 
+  fp_set_zebra_style(gray(0.91))
 
 
 
