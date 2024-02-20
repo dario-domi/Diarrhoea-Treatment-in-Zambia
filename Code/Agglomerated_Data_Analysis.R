@@ -41,10 +41,15 @@ library(dplyr)
 # Set working directory and read data
 wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
 setwd(wd)
-filename <- "../Data/Diarrhoea Treatments Mongu.xlsx"
-df <- read_xlsx(filename, range = "Data!C3:AE10", 
-                .name_repair = "unique_quiet")
+# OLD DATASET
+# filename <- "../Data/Diarrhoea Treatments Mongu.xlsx"
+# df_old <- read_xlsx(filename, range = "Data!C3:AE10", 
+#                .name_repair = "unique_quiet")
 
+# NEW
+filename <- "../Data/Diarrhoea Treatments Mongu - checked 090224.xlsx"
+df <- read_xlsx(filename, range = "Data!C4:AE11", 
+                .name_repair = "unique_quiet")
 
 #############################################
 #     PREPROCESS DATA 
@@ -56,14 +61,25 @@ df <- df %>% select_if(function(x) !(all(is.na(x))))
 cols_to_delete <- c("total_1_16", "total_2_16", "check_16", "total_1_17", "total_2_17")
 df <- df %>% select(!all_of(cols_to_delete)) # remove specified columns
 
-# Rename "Health Centres" column
-df <- df %>% rename(RHC = health_centre)
-# Remove " RHC" suffix from names of health centres which end with it
-for (i in 1:nrow(df)){
-  name <-df$RHC[i]
-  L <- nchar(name)
-  if (substr(name, L-3,L)==" RHC")          # if last 4 characters are " RCH"
-    df[i, "RHC"] <- substr(name, 1, L-4)    # remove those characters
+# Reorder rows (first UHCs, then RHCs, then HPs)
+new_order <- c(3, 6, 5, 1, 7, 2, 4)
+df <- df[new_order, ]
+
+# Rename "health centre" column into "facility"
+df <- df %>% rename(facility = health_centre)
+
+# Include appropriate suffix to each facility (UHC, RHC or HP)
+#
+# For Mulambwa, add "UHC"
+index <- 1
+df$facility[index] <- paste(df$facility[index], "UHC")
+#
+# For last three facilities, replace "RHC" with "HP"
+index <- c(5,6,7)
+for (i in index){
+  L <- nchar( df$facility[i] )
+  name <- substr(df$facility[i], 1, L-4)  # extract name of facility
+  df$facility[i] <- paste(name, "HP")     # add the suffix HP
 }
 
 
@@ -71,8 +87,8 @@ for (i in 1:nrow(df)){
 #     CREATE TWO DATAFRAMES  
 
 # Split into two dataframes (Oct16 and Oct 17)
-df16 <- df %>% select(RHC, ends_with("_16"))
-df17 <- df %>% select(RHC, ends_with("_17"))
+df16 <- df %>% select(facility, ends_with("_16"))
+df17 <- df %>% select(facility, ends_with("_17"))
 
 # Remove "_16" and "_17" suffices from all variable names
 names(df16) <- gsub(pattern = "_16", replacement = "", x = names(df16), fixed = TRUE)
@@ -86,13 +102,24 @@ df17 <- df17 %>% rename(ors = ors_alone, zinc = zinc_alone)
 df16[is.na(df16)] <- 0
 df17[is.na(df17)] <- 0
 
-# Add column of totals
-df16 <- df16 %>% mutate(tot = rowSums(across(where(is.numeric)), na.rm=T)) %>%
-                 mutate(correct_treat = ors_zinc_10 + ors_zinc_lt10 + ors_zinc_antibiotics)
-df17 <- df17 %>% mutate(tot = rowSums(across(where(is.numeric)), na.rm=T)) %>%
-                 mutate(correct_treat = ors_zinc_10 + co_pack + 
-                                        ors_zinc_antibiotics + co_pack_antibiotics)
+# Add column of totals and of correctly-dispensed cases (CDCs)
+df16 <- df16 %>% mutate(tot  = rowSums(across(where(is.numeric)), na.rm=T),
+                        CDCs = ors_zinc_10 + ors_zinc_antibiotics)
+df17 <- df17 %>% mutate(tot  = rowSums(across(where(is.numeric)), na.rm=T),
+                        CDCs = ors_zinc_10 + co_pack + 
+                               ors_zinc_antibiotics + co_pack_antibiotics)
+                 
+# Add column of co-pack for df17
+df17 <- df17 %>% mutate(tot_co_pack = co_pack + co_pack_antibiotics)
 
+# Swap order columns CDCs and tot
+L <- ncol(df16)
+df16 <- df16[, c(1:(L-2), L, L-1)]
+L <- ncol(df17)
+df17 <- df17[, c(1:(L-3), L-1, L-2, L)]
+
+# Garbace collector
+gc()
 
 #############################################
 
@@ -112,9 +139,9 @@ library(PropCIs)
 
 # The following results (in 2016) count as correct cases even the ones
 # where less than 10 zinc tablets were prescribed. 
-corr16 <- sum(df16$correct_treat)
+corr16 <- sum(df16$CDCs)
 tot16 <- sum(df16$tot)
-corr17 <- sum(df17$correct_treat)
+corr17 <- sum(df17$CDCs)
 tot17 <- sum(df17$tot)
 
 # Shorter names, for convenience
@@ -126,8 +153,8 @@ p1 <- x1/n1
 p2 <- x2/n2
 
 # Print to std output: Overview of agglomerated data
-s1 <- sprintf("Oct 2016:  %d correctly-treated cases out of %d\n", x1, n1) 
-s2 <- sprintf("Oct 2017: %d correctly-treated cases out of %d\n\n", x2, n2) 
+s1 <- sprintf("Oct 2016:  %d correctly-dispensed cases out of %d\n", x1, n1)  #  81 out of 177
+s2 <- sprintf("Oct 2017: %d correctly-dispensed cases out of %d\n\n", x2, n2) # 351 out of 405
 if (answer=="y") cat("\n", s1, s2, sep = "")
 
 
@@ -138,8 +165,6 @@ if (answer=="y") cat("\n", s1, s2, sep = "")
 # Same result with binom.test(x1, n1)
 prop16 <- exactci(x1, n1, conf.level = 0.95)$conf.int
 prop17 <- exactci(x2, n2, conf.level = 0.95)$conf.int
-# Estimate for Oct 2016, *without* cases who got <10 zinc tablets: 
-# exactci(66, 176, conf.level = 0.95) 
 
 # Create dataframe with CIs for the two proportions
 props <- data.frame(lwr = 100*c(prop16[1], prop17[1]),
@@ -150,44 +175,46 @@ rownames(props) <- c("Before\nCo-Packaging",
 props <- as.matrix(props)
 
 # Print to std output: Proportions of CTC
-s1 <- sprintf("Oct 2016. Sample Proportion: %.2f, CI: (%.2f, %.2f)\n", 
+s1 <- sprintf("Oct 2016. Sample Proportion of CDCs: %.2f, CI: (%.2f, %.2f)\n", 
               p1, prop16[1], prop16[2])
-s2 <- sprintf("Oct 2017. Sample Proportion: %.2f, CI: (%.2f, %.2f)\n\n", 
+s2 <- sprintf("Oct 2017. Sample Proportion of CDCs: %.2f, CI: (%.2f, %.2f)\n\n", 
               p2, prop17[1], prop17[2])
-if (answer=="y") cat(s1, s2, sep = "")
+if (answer=="y") cat(s1, s2, sep = "") # 0.46 (0.38, 0.53)
+                                       # 0.87 (0.83, 0.90)
 
 
 ############################################################
 #        TEST OF HOMOGENEITY OF PROPORTIONS   
 
-test_homog <- prop.test(c(x1, x2), c(n1, n2), alternative = "l") # (0.3440, 0.5137), p < e-16
-
-# Same test, more output details
-library(rstatix)
-test_homog2 <- prop_test(x = c(x1, x2), n = c(n1, n2), 
-                        alternative = "g", detailed = T)
+test_homog <- prop.test(c(x2, x1), c(n2, n1), alternative = "g") # (0.3440, 0.5137), p < e-16
 
 # Print to std output: Overview of agglomerated data
 if (answer=="y")  cat("To see results of test of homogeneity of proportions,",
-                      "type 'test_homog' or 'test_homog2.\n\n")
+                      "type 'test_homog' or 'test_homog2'.\n\n")
 
 
 ############################################################
 #   CONFIDENCE INTERVAL FOR DIFFERENCE OF PROPORTIONS
 
 # Wald CI (link n4 at beginning of script. See also Agresti 2002, pag 27, and exercise 2.15)
-prop_diff_CI <- wald2ci(x2, n2, x1, n1, conf.level = 0.95, adjust = "Wald") # (0.3481, 0.5095)
+prop_diff_CI <- wald2ci(x2, n2, x1, n1, conf.level = 0.95, adjust = "Wald") # (0.3285, 0.4896)
 
 # Calculations behind the above Wald CI (uses that log(p1/p2) approx normal, large sample)
 v <- p1*(1-p1)/n1 + p2*(1-p2)/n2
 q <- qnorm(0.975)
-p2-p1 + c(-1,1)*q*sqrt(v) # (0.3481, 0.5095)
+round(p2-p1 + c(-1,1)*q*sqrt(v), 4) # (0.3285, 0.4896)
 
 # Print to std output: Difference between proportions
 s <- sprintf("Difference between proportions: %.2f (%.2f, %.2f)\n",
              prop_diff_CI$estimate, 
              prop_diff_CI$conf.int[1], prop_diff_CI$conf.int[2])
 if (answer=="y") cat(s)
+
+
+# CI of difference, for centre j
+j <- 1 # 1=Mulawbwa, 4=Nalwei
+wald2ci(df17$CDCs[j], df17$tot[j], df16$CDCs[j], df16$tot[j], 
+        conf.level = 0.95, adjust = "Wald")
 
 
 ############# CONFIDENCE INTERVAL FOR RATE RATIO   #############
@@ -200,8 +227,9 @@ round(rateCI95$conf.int, 2)
 round(rateCI99$conf.int, 2)
 
 # Print to std output: Rate Ratio
-s <- sprintf("Rate ratio between proportions: %.2f (%.2f, %.2f)\n",
-             p2/p1, rateCI95$conf.int[1], rateCI95$conf.int[2]) # 1.98 ()
+s <- sprintf("Rate ratio between proportions: %.2f.\n\t95%% CI: (%.2f, %.2f)\n\t99%% CI: (%.2f, %.2f).",
+             p2/p1, rateCI95$conf.int[1], rateCI95$conf.int[2],
+             rateCI99$conf.int[1], rateCI99$conf.int[2])
 if (answer=="y") cat(s)
 
 
@@ -221,8 +249,9 @@ if (answer=="y") cat(s)
 
 # Same test as prop.test, a few more output details
 library(rstatix)
-test_homog2 <- prop_test(x = c(x1, x2), n = c(n1, n2), 
+test_homog2 <- prop_test(x = c(x2, x1), n = c(n2, n1), 
                          alternative = "g", detailed = T)
+
 
 # Alternative CI for difference of proportions
 diffscoreci(x1, n1, x2, n2, conf.level = 0.95) # (0.3468, 0.5073)
@@ -243,10 +272,7 @@ diffscoreci(x1, n1, x2, n2, conf.level = 0.95) # (0.3468, 0.5073)
 #3 Rate ratios and risk ratios
 #https://sphweb.bumc.bu.edu/otlt/mph-modules/ep/ep713_association/ep713_association3.html
 
-#4 CI for rate ratio
+#4 CI for rate ratio and odds ratio
 #https://influentialpoints.com/Training/confidence_intervals_of_risk_ratio_odds_ratio_and_rate_ratio-principles-properties-assumptions.htm
 
-# a random line
-# one more random line
-# two more random lines
 ############################################################################
