@@ -247,7 +247,7 @@ plot_diff_CI <- function(){
   
   # Add horizontal gridlines
   abline(h = seq(-100, 100, 20), 
-         lty = 3, col = gray(0.95), lwd = 0.8)
+         lty = 3, col = gray(0.95), lwd = 2)
   
   # CI around estimate
   arrows(x0 = 0,   x1 = 0, 
@@ -278,6 +278,7 @@ plot_diff_CI <- function(){
   
 }
 
+#plot_diff_CI()
 
 # SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
 pdf(file = paste0(picpath, "Overall_Difference_Proportions.pdf"),
@@ -298,50 +299,91 @@ dev.off()
 #
 ###############################################################
 
-centre <- 2
-fisher.test(CDC_Table[,,centre])
+#centre <- 2
+#fisher.test(CDC_Table[,,centre])
 
 
 library(forestplot)
+options(forestplot_new_page = F)
 
-base_data <- tibble(mean  = c(0.578, 0.165, 0.246, 0.700, 0.348, 0.139, Inf),
-                    lower = c(0.372, 0.018, 0.072, 0.333, 0.083, 0.016, 0.365),
-                    upper = c(0.898, 1.517, 0.833, 1.474, 1.455, 1.209, Inf),
-                    facility = c("Auckland", "Block", "Doran", "Gamsu",
-                              "Morrison", "Papageorgiou", "Tauesch"),
-                    OR = c("0.58", "0.16", "0.25", "0.70", "0.35", "0.14", "1.02"),
-                    empty = rep(NA, 7)
-                    )
+linear_ticks <- c(seq(0.5, 1, 0.1), 
+                      seq(2,10,1), 
+                      seq(20,100,10), 
+                      seq(200,1000,100))
+my_ticks <- log(linear_ticks)
+xticklabs <- as.character(linear_ticks)
+xticklabs[c(2:5, 8,9, 11:14, 17,18, 20:23, 26,27, 29:32)] <- ""
+attr(my_ticks, "labels") <- xticklabs
 
-my_ticks <- log(c(1,2,4,8,16))
-attr(my_ticks, "labels") <- c("a", "b", "cc", "d", "ee")
+boxcol <- "dodgerblue3"
+linescol <- "dodgerblue2"
+boxcol <- "royalblue3"
+linescol <- "royalblue1"
+summarycol <- "springgreen4"
 
 # Forest plot
-OR_data |>
-  forestplot(labeltext = c(facility, CDC16, CDC17, empty, OR),
-             clip = c(0.1, 1000),
-             xlog = T,
-             xticks = my_ticks
-             ) |>
-  fp_set_style(box = "royalblue",
-               line = "deepskyblue2",
-               summary = "royalblue") |> 
-  fp_add_header(facility = "Facility",
-                CDC16 = "CDCs\n2016",
-                CDC17 = "CDCs\n2017",
-                empty = NA,
-                OR = "OR") |>
-  fp_append_row(mean  = 3,
-                lower = 2,
-                upper = 4.5,
-                facility = "Aggregated",
-                CDC16 = "a",
-                CDC17 = "b",
-                empty=NA,
-                OR = "3",
-                is.summary = TRUE) |> 
-  fp_set_zebra_style(gray(0.91))
+plot_FP <- function(){
+  
+  OR_data |>
+    # MAIN FORESTPLOT
+    forestplot(labeltext = c(facility, Odds16, Odds17, OR),
+               fn.ci_norm = fpDrawNormalCI,   # boxes are squares
+               vertices = TRUE,               # whiskers end with vertical lines
+               ci.vertices.height = 0.1,
+               clip = c(0.1, 1000),           # x limits
+               xticks = my_ticks,
+               xlog = T,                      # log scale on x axis
+               align = "rccc"                 # column alignment
+               ) |>
+    # SET STYLE OF BOXES, LINES ETC
+    fp_set_style(box       = gpar(fill = boxcol, col = boxcol, lwd=2),
+                 lines     = gpar(col = linescol, lwd=1),
+                 hrz_lines = gpar(col=gray(0.4)),
+                 summary   = gpar(fill = summarycol, lwd=2), # last line
+                 zero      = gpar(lty=2, lwd=2),             # line at x=1
+                 axes      = gpar(cex = 0.85),
+                 txt_gp    = fpTxtGp(label = gpar(fontfamily = "serif", cex=1.15))
+                 ) |> 
+    # HEADER SPECIFICATION
+    fp_add_header(facility = fp_align_center("Facility"),
+                  Odds16 = "Odds\n2016",
+                  Odds17 = "Odds\n2017",
+                  OR = "OR"
+                  ) |>
+    # ADD LINES BELOW HEADER AND TO SEPARATE DATA FROM SUMMARY 
+    fp_add_lines(h_2 = gpar(lty=1),                     # 2nd row
+                 h_9 = gpar(columns = 1:4, lty = 5)     # 9th row
+                 ) |>
+    # ADD SUMMARY ROW
+    fp_append_row(mean  = OR_summary$mean,
+                  lower = OR_summary$lower,
+                  upper = OR_summary$upper,
+                  facility = OR_summary$facility,
+                  Odds16 = OR_summary$Odds16,
+                  Odds17 = OR_summary$Odds17,
+                  OR = OR_summary$OR,
+                  is.summary = T
+                  ) |> 
+    fp_set_zebra_style(gray(0.91)) #|>
+#    fp_set_style(axes = gpar(col="red", cex=1))
+}
+
+#plot_FP() %>% fp_set_style(axes = gpar(col="red", cex=1.2))
+
+# SAVE FOREST PLOT OF ODDS RATIOS
+pdf(file = paste0(picpath, "ForestPlot.pdf"),
+    width = 9, 
+    height = 5.4)
+plot_FP()
+dev.off()
 
 
-
+# SAVE FOREST PLOT OF ODDS RATIOS
+png(file = paste0(picpath, "ForestPlot.png"),
+    width = 9, 
+    height = 5.4,
+    res = 1200,
+    units = "in")
+plot_FP()
+dev.off()
 
