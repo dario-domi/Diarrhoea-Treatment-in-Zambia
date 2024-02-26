@@ -124,7 +124,6 @@ for (fac in levels(Treated_Cases$Facility)){ # loop over facilities
   }
 }
 
-
 # Transform data frame into 2x2x7 table
 CDC_Table <- xtabs(Count ~ Correct + Co_pack + Facility, data=Treated_Cases)
 
@@ -152,6 +151,14 @@ if (answer=="y") cat(sprintf(out,
                              cmh$estimate,
                              cmh$conf.int[1], cmh$conf.int[2]))
 
+# Check that value of common OR in Mantel-Haenszel test is as expected
+a <- 0
+b <- 0
+for (i in 1:7){
+  a <- a + CDC_Table[1,1,i]*CDC_Table[2,2,i]/sum(CDC_Table[,,i])
+  b <- b + CDC_Table[1,2,i]*CDC_Table[2,1,i]/sum(CDC_Table[,,i])
+}
+a/b
 
 
 #################################################################
@@ -162,8 +169,8 @@ OR_data <- tibble(mean  = rep(0,7),
                   lower = rep(0,7),
                   upper = rep(0,7),
                   facility = df16$facility,
-                  CDC16 = rep("a",7),
-                  CDC17 = rep("b",7),
+                  Odds16 = rep("a",7),
+                  Odds17 = rep("b",7),
                   OR = rep(NA, 7),
                   empty = rep(NA, 7)
 )
@@ -184,115 +191,131 @@ for (centre in 1:n){
   ci <- as.numeric(ci$conf.int)
   OR <- (x1/(n1-x1)) / (x2/(n2-x2))   #  exp(mean(log(ci)))
 
+  # CDCs/(Not CDCs) cases, for 2016 and 2017
+  s1 <- as.character(x1)
+  s2 <- as.character(n1-x1)
+  str17 <- paste0(s1, "/", s2)
+  s1 <- as.character(x2)
+  s2 <- as.character(n2-x2)
+  str16 <- paste0(s1, "/", s2)
+
   # Populate the tibble
   OR_data$mean[centre]  <- OR
   OR_data$lower[centre] <- ci[1]
   OR_data$upper[centre] <- ci[2]
-  OR_data$OR[centre] <- as.character(round(OR,2))
+  OR_data$OR[centre] <- as.character(signif(OR,2))
+  OR_data$Odds16[centre] <- str16
+  OR_data$Odds17[centre] <- str17
+  
 }
 
+# Fill in information for aggregated data
+OR_summary <- OR_data %>% slice(1)
+OR_summary$facility <- "Overall"
+OR_summary$OR       <- as.character(round(cmh$estimate,1))
+OR_summary$mean     <- cmh$estimate
+OR_summary$lower    <- cmh$conf.int[1]
+OR_summary$upper    <- cmh$conf.int[2]
+Tb <- apply(CDC_Table, c(1,2), sum)
+OR_summary$Odds16   <- paste0( as.character(Tb[1,2]), "/", as.character(Tb[2,2]))
+OR_summary$Odds17   <- paste0( as.character(Tb[1,1]), "/", as.character(Tb[2,1]))
 
 
 
-s <- sqrt( 1/x1 + 1/x2 + 1/(n1-x1) + 1/(n2-x2))
-(log(ci[2])-log(ci[1]))/(2*s)
-
-
-
-#################################################################
-#       MIXED-EFFECTS LOGISTIC REGRESSION
-
-library(lme4)
-
-# Create tibble to be used in logistic regression,
-# with counts of CDCs and of total cases
-Props_Data <- Treated_Cases %>% 
-                  group_by(Facility, Co_pack) %>%
-                  mutate(Totals = sum(Count)) %>%
-                  filter(Correct=="Y") %>%
-                  select(-any_of("Correct"))
-
-fit1 <- glmer(Count/Totals ~ Co_pack + (1|Facility), 
-              data = Props_Data, weights=Totals, family=binomial)
-
-fit1 <- glmer(cbind(Count, Totals-Count) ~ Co_pack + (1|Facility), 
-              data = Props_Data, family=binomial,
-              nAGQ = 100)
-dotplot.ranef.mer(ranef(fit1))
-
-glmer(Count/Totals ~ offset(log(Totals)) + Co_pack + (1|Facility), 
-      data=Props_Data, family=poisson)
-
-
-########################################
-#
-# PROVE CON SYNTETIC DATA
-#
-
-Tab <- Props_Data
-Tab <- Tab[1:8, ]
-
-Tab[1, "Count"] <- 35
-Tab[2, "Count"] <- 12
-Tab[3, "Count"] <- 26
-Tab[4, "Count"] <- 2
-Tab[5, "Count"] <- 189
-Tab[6, "Count"] <- 46
-Tab[7, "Count"] <- 24
-Tab[8, "Count"] <- 9
-
-Tab
-
-fit2 <- glmer(Count/Totals ~ Co_pack + (1|RHC), 
-             data = Tab, weights=Totals, family=binomial)
-
-summary(fit2)
-coef(fit2)
-
-myfunc <- function(x){x[1]/x[2]}
-# Computing odds ratios
-Tab %>% mutate(p = Count/Totals,
-               odds = p/(1-p),
-               logodds = log(odds)) %>%
-        group_by(RHC) %>% 
-        mutate(OR = myfunc(odds)) %>%
-        select(RHC, p, odds, logodds, OR)
-
-
-
-ranef(fit2)$RHC
-x <- as.numeric(unlist(ranef(fit2)$RHC))
-x
-var(x)
-sum(x)
-
-dotplot.ranef.mer(ranef(fit2))
-
-
-# Compute CIs from ranef
-dd <- as.data.frame(ranef(fit2))
-dd %>% select(grp, condval, condsd) %>% 
-       mutate(across(where(is.numeric), round, digits=3))
-
-
-# Potentially good terminology
-# https://bookdown.org/steve_midway/DAR/random-effects.html
-# Gelman and Hill (2006)
-
-fit3 <- glmer(cbind(Count, Totals-Count) ~ Co_pack + (1|RHC), 
-              data = Tab, family=binomial)
-
-summary(fit1)
-summary(fit2)
-
-x <- as.numeric(unlist(ranef(fit2)$RHC))
-x
-var(x)
-sd(x)
+# #################################################################
+# #       MIXED-EFFECTS LOGISTIC REGRESSION
+# 
+# library(lme4)
+# 
+# # Create tibble to be used in logistic regression,
+# # with counts of CDCs and of total cases
+# Props_Data <- Treated_Cases %>% 
+#                   group_by(Facility, Co_pack) %>%
+#                   mutate(Totals = sum(Count)) %>%
+#                   filter(Correct=="Y") %>%
+#                   select(-any_of("Correct"))
+# 
+# fit1 <- glmer(Count/Totals ~ Co_pack + (1|Facility), 
+#               data = Props_Data, weights=Totals, family=binomial)
+# 
+# fit1 <- glmer(cbind(Count, Totals-Count) ~ Co_pack + (1|Facility), 
+#               data = Props_Data, family=binomial,
+#               nAGQ = 100)
+# dotplot.ranef.mer(ranef(fit1))
+# 
+# glmer(Count/Totals ~ offset(log(Totals)) + Co_pack + (1|Facility), 
+#       data=Props_Data, family=poisson)
+# 
+# 
+# ########################################
+# #
+# # PROVE CON SYNTETIC DATA
+# #
+# 
+# Tab <- Props_Data
+# Tab <- Tab[1:8, ]
+# 
+# Tab[1, "Count"] <- 35
+# Tab[2, "Count"] <- 12
+# Tab[3, "Count"] <- 26
+# Tab[4, "Count"] <- 2
+# Tab[5, "Count"] <- 189
+# Tab[6, "Count"] <- 46
+# Tab[7, "Count"] <- 24
+# Tab[8, "Count"] <- 9
+# 
+# Tab
+# 
+# fit2 <- glmer(Count/Totals ~ Co_pack + (1|RHC), 
+#              data = Tab, weights=Totals, family=binomial)
+# 
+# summary(fit2)
+# coef(fit2)
+# 
+# myfunc <- function(x){x[1]/x[2]}
+# # Computing odds ratios
+# Tab %>% mutate(p = Count/Totals,
+#                odds = p/(1-p),
+#                logodds = log(odds)) %>%
+#         group_by(RHC) %>% 
+#         mutate(OR = myfunc(odds)) %>%
+#         select(RHC, p, odds, logodds, OR)
+# 
+# 
+# 
+# ranef(fit2)$RHC
+# x <- as.numeric(unlist(ranef(fit2)$RHC))
+# x
+# var(x)
+# sum(x)
+# 
+# dotplot.ranef.mer(ranef(fit2))
+# 
+# 
+# # Compute CIs from ranef
+# dd <- as.data.frame(ranef(fit2))
+# dd %>% select(grp, condval, condsd) %>% 
+#        mutate(across(where(is.numeric), round, digits=3))
+# 
+# 
+# # Potentially good terminology
+# # https://bookdown.org/steve_midway/DAR/random-effects.html
+# # Gelman and Hill (2006)
+# 
+# fit3 <- glmer(cbind(Count, Totals-Count) ~ Co_pack + (1|RHC), 
+#               data = Tab, family=binomial)
+# 
+# summary(fit1)
+# summary(fit2)
+# 
+# x <- as.numeric(unlist(ranef(fit2)$RHC))
+# x
+# var(x)
+# sd(x)
 ################################################################
 
 
-# odds ration interpretation: pag 104 of Agresti
+# odds ratio interpretation: pag 104 of Agresti
 
 # we test for conditional independence of correct treatment and introduction of#
 # the co-pack, controlling for the different health centres

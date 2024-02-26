@@ -108,13 +108,13 @@ plot_agglomerated_props <- function(){
   mtext("Overall Proportion of CDCs", side = 3, font=3, col = "white", line = 0.7, cex=2)
 }
 
-
-# SAVE THE PLOT
-pdf(file = paste0(picpath, "Overall_Proportions.pdf"),  # Specify figure size and path
-    width = 10, # The width of the plot in inches
-    height = 6)
-plot_agglomerated_props()                               # Make plot
-dev.off()                                               # Save plot
+# 
+# # SAVE THE PLOT PDF
+# pdf(file = paste0(picpath, "Overall_Proportions.pdf"),  # Specify figure size and path
+#     width = 10, # The width of the plot in inches
+#     height = 6)
+# plot_agglomerated_props()                               # Make plot
+# dev.off()                                               # Save plot
 
 
 ###############################################################
@@ -208,7 +208,7 @@ plot_HC_props <- function(){
 }
 
 
-# SAVE THE PLOT
+# SAVE THE PLOT IN PDF
 pdf(file = paste0(picpath, "HC_Proportions.pdf"),  # Specify figure size and path
     width = 12, 
     height = 6)
@@ -216,6 +216,14 @@ plot_HC_props()                                    # Make plot
 dev.off()                                          # Save plot
 
 
+# SAVE THE PLOT IN PNG
+png(file = paste0(picpath, "HC_Proportions.png"),  # Specify figure size and path
+    width = 12, 
+    height = 6,
+    units = "in",
+    res = 600)
+plot_HC_props()                                    # Make plot
+dev.off()                                          # Save plot
 
 ###############################################################
 #
@@ -278,9 +286,8 @@ plot_diff_CI <- function(){
   
 }
 
-#plot_diff_CI()
 
-# SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
+# PDF: SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
 pdf(file = paste0(picpath, "Overall_Difference_Proportions.pdf"),
     width = 10, 
     height = 6)
@@ -292,6 +299,18 @@ plot_diff_CI()
 dev.off()
 
 
+# PNG: SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
+png(file = paste0(picpath, "Overall_Difference_Proportions.png"),
+    width = 10, 
+    height = 6,
+    units = "in",
+    res = 600)
+# Set layout of plot and save
+mat_layout <- matrix(c(1,2), nrow = 1)
+layout(mat = mat_layout, widths = c(2,1))
+plot_agglomerated_props()
+plot_diff_CI()
+dev.off()
 
 ###############################################################
 #
@@ -299,12 +318,9 @@ dev.off()
 #
 ###############################################################
 
-#centre <- 2
-#fisher.test(CDC_Table[,,centre])
-
 
 library(forestplot)
-options(forestplot_new_page = F)
+#options(forestplot_new_page = F)
 
 linear_ticks <- c(seq(0.5, 1, 0.1), 
                       seq(2,10,1), 
@@ -333,7 +349,7 @@ plot_FP <- function(){
                clip = c(0.1, 1000),           # x limits
                xticks = my_ticks,
                xlog = T,                      # log scale on x axis
-               align = "rccc"                 # column alignment
+               align = "cccc"                 # column alignment
                ) |>
     # SET STYLE OF BOXES, LINES ETC
     fp_set_style(box       = gpar(fill = boxcol, col = boxcol, lwd=2),
@@ -358,19 +374,18 @@ plot_FP <- function(){
     fp_append_row(mean  = OR_summary$mean,
                   lower = OR_summary$lower,
                   upper = OR_summary$upper,
-                  facility = OR_summary$facility,
+                  facility = fp_align_center(OR_summary$facility),
                   Odds16 = OR_summary$Odds16,
                   Odds17 = OR_summary$Odds17,
                   OR = OR_summary$OR,
                   is.summary = T
                   ) |> 
-    fp_set_zebra_style(gray(0.91)) #|>
-#    fp_set_style(axes = gpar(col="red", cex=1))
+    fp_set_zebra_style(gray(0.91))
+  
 }
 
-#plot_FP() %>% fp_set_style(axes = gpar(col="red", cex=1.2))
 
-# SAVE FOREST PLOT OF ODDS RATIOS
+# PDF: SAVE FOREST PLOT OF ODDS RATIOS
 pdf(file = paste0(picpath, "ForestPlot.pdf"),
     width = 9, 
     height = 5.4)
@@ -378,11 +393,11 @@ plot_FP()
 dev.off()
 
 
-# SAVE FOREST PLOT OF ODDS RATIOS
+# PNG: SAVE FOREST PLOT OF ODDS RATIOS
 png(file = paste0(picpath, "ForestPlot.png"),
     width = 9, 
     height = 5.4,
-    res = 1200,
+    res = 600,
     units = "in")
 plot_FP()
 dev.off()
