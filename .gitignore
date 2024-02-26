@@ -1,8 +1,10 @@
 # Folders to be ignored
 Data/
 Documents/
+Pictures/*.png
 
 # Files to be ignored
 Odds.png
 *.txt
 *Copy.pdf
+*Old.pdf
