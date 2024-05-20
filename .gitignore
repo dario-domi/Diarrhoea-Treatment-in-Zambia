@@ -1,10 +1,14 @@
 # Folders to be ignored
-Data/
 Documents/
-Pictures/*.png
+Old_Pics/
+Data/*
+*.zip
 
 # Files to be ignored
-Odds.png
+Code/Additional_Attempts.R
 *.txt
 *Copy.pdf
 *Old.pdf
+
+# Exceptions to previous ignores
+!Data/Diarrhoea_Treatments_Mongu.xlsx

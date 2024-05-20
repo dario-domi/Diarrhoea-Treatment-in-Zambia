@@ -15,7 +15,6 @@
 #
 ################################################################################
 
-
 ################################################################################
 #
 #####          PRELIMINARY OPERATIONS (data loading, cleaning)             #####
@@ -23,10 +22,10 @@
 ################################################################################
 
 
-#############################################
-#    INTERACTIVE QUESTION 
+##################################################################
+#    INTERACTIVE QUESTION TO DECIDE WHETHER TO DIPLAY RESULTS
 
-# Ask the user if they want results to be printed to output
+# Ask the user if they want results to be printed to standard output
 cat("Do you want summarised results of the aggregated analyses",
     "to be shown? (y/n)\n")
 answer <- readline()
@@ -38,69 +37,39 @@ answer <- readline()
 library(readxl)
 library(dplyr)
 
-# Set working directory and read data
+# Set working directory
 wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
 setwd(wd)
-# OLD DATASET
-# filename <- "../Data/Diarrhoea Treatments Mongu.xlsx"
-# df_old <- read_xlsx(filename, range = "Data!C3:AE10", 
-#                .name_repair = "unique_quiet")
 
-# NEW
-filename <- "../Data/Diarrhoea Treatments Mongu - checked 090224.xlsx"
-df <- read_xlsx(filename, range = "Data!C4:AE11", 
-                .name_repair = "unique_quiet")
+# Read data 
+filename <- "../Data/Version_for_Repository/Diarrhoea Treatments Mongu.xlsx"
+df16 <- read_xlsx(filename, 
+                  sheet = 'Records 2016', range = 'B4:M11')
+df17 <- read_xlsx(filename, 
+                  sheet = 'Records 2017', range = 'B4:M11')
 
 #############################################
-#     PREPROCESS DATA 
-
-# Remove empty columns
-df <- df %>% select_if(function(x) !(all(is.na(x))))
-
-# Remove additional unneeded columns
-cols_to_delete <- c("total_1_16", "total_2_16", "check_16", "total_1_17", "total_2_17")
-df <- df %>% select(!all_of(cols_to_delete)) # remove specified columns
+#     TIDY UP DATA AND RENAME VARIABLES
 
 # Reorder rows (first UHCs, then RHCs, then HPs)
 new_order <- c(3, 6, 5, 1, 7, 2, 4)
-df <- df[new_order, ]
+df16 <- df16[new_order, ]
+df17 <- df17[new_order, ]
 
-# Rename "health centre" column into "facility"
-df <- df %>% rename(facility = health_centre)
-
-# Include appropriate suffix to each facility (UHC, RHC or HP)
-#
-# For Mulambwa, add "UHC"
-index <- 1
-df$facility[index] <- paste(df$facility[index], "UHC")
-#
-# For last three facilities, replace "RHC" with "HP"
-index <- c(5,6,7)
-for (i in index){
-  L <- nchar( df$facility[i] )
-  name <- substr(df$facility[i], 1, L-4)  # extract name of facility
-  df$facility[i] <- paste(name, "HP")     # add the suffix HP
-}
-
-
-#############################################
-#     CREATE TWO DATAFRAMES  
-
-# Split into two dataframes (Oct16 and Oct 17)
-df16 <- df %>% select(facility, ends_with("_16"))
-df17 <- df %>% select(facility, ends_with("_17"))
+# Remove empty columns
+df16 <- df16 %>% select_if(function(x) any(x!=0))
+df17 <- df17 %>% select_if(function(x) any(x!=0))
 
 # Remove "_16" and "_17" suffices from all variable names
 names(df16) <- gsub(pattern = "_16", replacement = "", x = names(df16), fixed = TRUE)
 names(df17) <- gsub(pattern = "_17", replacement = "", x = names(df17), fixed = TRUE)
 
-# Rename other variables
-df16 <- df16 %>% rename(ors = ors_alone, zinc = zinc_alone)
-df17 <- df17 %>% rename(ors = ors_alone, zinc = zinc_alone)
+# Rename some variables 
+df16 <- df16 %>% rename(facility = health_facility, ors = ors_alone, zinc = zinc_alone)
+df17 <- df17 %>% rename(facility = health_facility, ors = ors_alone, zinc = zinc_alone)
 
-# Replace NAs with 0s
-df16[is.na(df16)] <- 0
-df17[is.na(df17)] <- 0
+#############################################################
+#   CREATE ADDITIONAL COLUMNS (total and count of CDCs)  
 
 # Add column of totals and of correctly-dispensed cases (CDCs)
 df16 <- df16 %>% mutate(tot  = rowSums(across(where(is.numeric)), na.rm=T),
@@ -108,18 +77,16 @@ df16 <- df16 %>% mutate(tot  = rowSums(across(where(is.numeric)), na.rm=T),
 df17 <- df17 %>% mutate(tot  = rowSums(across(where(is.numeric)), na.rm=T),
                         CDCs = ors_zinc_10 + co_pack + 
                                ors_zinc_antibiotics + co_pack_antibiotics)
-                 
+
 # Add column of co-pack for df17
 df17 <- df17 %>% mutate(tot_co_pack = co_pack + co_pack_antibiotics)
 
-# Swap order columns CDCs and tot
-L <- ncol(df16)
-df16 <- df16[, c(1:(L-2), L, L-1)]
-L <- ncol(df17)
-df17 <- df17[, c(1:(L-3), L-1, L-2, L)]
+# Swap order of columns CDCs and tot
+L <- ncol(df16); df16 <- df16[, c(1:(L-2), L, L-1)]
+L <- ncol(df17); df17 <- df17[, c(1:(L-3), L-1, L-2, L)]
 
-# Garbace collector
-gc()
+# Remove unnecessary variables
+rm(wd, filename, L, new_order); invisible(gc())
 
 #############################################
 
@@ -133,22 +100,13 @@ gc()
 # Library to compute confidence intervals associated with binomial proportions
 library(PropCIs)
 
-
 #############################################
-#     DEFINE MAIN VARIABLES  
+#   SHORTER NAMES FOR RELEVANT VARIABLES  
 
-# The following results (in 2016) count as correct cases even the ones
-# where less than 10 zinc tablets were prescribed. 
-corr16 <- sum(df16$CDCs)
-tot16 <- sum(df16$tot)
-corr17 <- sum(df17$CDCs)
-tot17 <- sum(df17$tot)
-
-# Shorter names, for convenience
-x1 <- corr16
-n1 <- tot16
-x2 <- corr17
-n2 <- tot17
+x1 <- sum(df16$CDCs)          # correctly-dispensed cases in 2016
+x2 <- sum(df17$CDCs)          # correctly-dispensed cases in 2017
+n1 <- sum(df16$tot)           # total cases in 2016
+n2 <- sum(df17$tot)           # total cases in 2017
 p1 <- x1/n1
 p2 <- x2/n2
 
@@ -186,20 +144,21 @@ if (answer=="y") cat(s1, s2, sep = "") # 0.46 (0.38, 0.53)
 ############################################################
 #        TEST OF HOMOGENEITY OF PROPORTIONS   
 
-test_homog <- prop.test(c(x2, x1), c(n2, n1), alternative = "g") # (0.3440, 0.5137), p < e-16
+test_homog <- prop.test(c(x2, x1), c(n2, n1), alternative = "g") # p < e-16
+test_homog
 
 # Print to std output: Overview of agglomerated data
 if (answer=="y")  cat("To see results of test of homogeneity of proportions,",
-                      "type 'test_homog' or 'test_homog2'.\n\n")
+                      "type 'test_homog'.\n\n")
 
 
 ############################################################
 #   CONFIDENCE INTERVAL FOR DIFFERENCE OF PROPORTIONS
 
-# Wald CI (link n4 at beginning of script. See also Agresti 2002, pag 27, and exercise 2.15)
+# Wald CI (link n4 at end of script. See also Agresti 2002, pag 27, and exercise 2.15)
 prop_diff_CI <- wald2ci(x2, n2, x1, n1, conf.level = 0.95, adjust = "Wald") # (0.3285, 0.4896)
 
-# Calculations behind the above Wald CI (uses that log(p1/p2) approx normal, large sample)
+# Explicit calculations behind the above Wald CI (uses that log(p1/p2) is approx normal, large sample)
 v <- p1*(1-p1)/n1 + p2*(1-p2)/n2
 q <- qnorm(0.975)
 round(p2-p1 + c(-1,1)*q*sqrt(v), 4) # (0.3285, 0.4896)
@@ -211,26 +170,26 @@ s <- sprintf("Difference between proportions: %.2f (%.2f, %.2f)\n",
 if (answer=="y") cat(s)
 
 
-# CI of difference, for centre j
-j <- 1 # 1=Mulawbwa, 4=Nalwei
-wald2ci(df17$CDCs[j], df17$tot[j], df16$CDCs[j], df16$tot[j], 
-        conf.level = 0.95, adjust = "Wald")
-
-
 ############# CONFIDENCE INTERVAL FOR RATE RATIO   #############
 
 # Rate ratio (NOT computed through lognormal approximation)
-rateCI95 <- riskscoreci(x2, n2, x1, n1, conf.level = 0.95) # (1.685, 2.374)
-rateCI99 <- riskscoreci(x2, n2, x1, n1, conf.level = 0.99) # (1.685, 2.374)
+rateCI95 <- riskscoreci(x2, n2, x1, n1, conf.level = 0.95) # (1.623, 2.254)
+rateCI99 <- riskscoreci(x2, n2, x1, n1, conf.level = 0.99) # (1.552, 2.390)
 
-round(rateCI95$conf.int, 2)
+round(rateCI95$conf.int, 3)
 round(rateCI99$conf.int, 2)
 
 # Print to std output: Rate Ratio
 s <- sprintf("Rate ratio between proportions: %.2f.\n\t95%% CI: (%.2f, %.2f)\n\t99%% CI: (%.2f, %.2f).",
              p2/p1, rateCI95$conf.int[1], rateCI95$conf.int[2],
              rateCI99$conf.int[1], rateCI99$conf.int[2])
-if (answer=="y") cat(s)
+if (answer=="y") cat(s, "\n")
+
+# Alternative as described in example 2.15 of Agresti's book, not equal to the above
+s <- sqrt( (1-p1)/x1 + (1-p2)/x2 )
+exp(log(p2/p1) + c(-1,1) * qnorm(0.975)*s)
+
+
 
 
 ########################################
