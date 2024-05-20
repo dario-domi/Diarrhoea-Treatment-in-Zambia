@@ -2,22 +2,23 @@
 
 
 ## Project Background
-The project is a collaboration between myself and the UK charity [ColaLife](https://www.colalife.org/), as part of the [Statisticians for Society](https://rss.org.uk/membership/volunteering-and-promoting/statisticians-for-society-initiative/) initiative by the Royal Statistical Society. I am the lead volunteer statistician for the project.
+The project is a collaboration between myself and the UK charity [ColaLife](https://www.colalife.org/), as part of the [Statisticians for Society](https://rss.org.uk/membership/volunteering-and-promoting/statisticians-for-society-initiative/) initiative of the Royal Statistical Society. I am the lead volunteer statistician for the project.
 
 </br>
 <p align="center">
-<img src='Pictures/Logos/ColaLife_logo.jpg' width='240' height='90'> 
+<img src='Pictures/Logos/ColaLife_logo.jpg' width='160' height='60'> 
 &emsp; &emsp; &emsp; &emsp;
-<img src='Pictures/Logos/RSS_logo.png' width='200'>
+<img src='Pictures/Logos/RSS_logo.png' width='130'>
 </p>
 </br>
-The project is concerned with the statistical assessment of the effect of co-packaging on the correct &ndash; and often life-saving &ndash; treatment of diarrhoea for Zambian children. More details below.
-
-
+The project focuses on the issue of correct diarrhoea treatment in Zambian children. Specifically, it looks at whether 
+the introduction of a co-pack containing oral rehydration salts and zinc tablets, in rural health facilities where the two elements were already separately available, has affected dispensing practices of the recommended treatment for diarrhoea. More details follow.
 </br>
 </br>
 <p align="center">
-<img src='Pictures/Logos/Co-Pack.jpg' width='400'>
+<img src='Pictures/Logos/Co-Pack.jpg' width='350'>
+&emsp; &emsp;
+<img src='Pictures/Logos/Kit_Yamoyo.jpg', width='325'>
 </p>
 </br>
 
@@ -25,16 +26,16 @@ The project is concerned with the statistical assessment of the effect of co-pac
 ## Project Overview
 
 Diarrhoea is a leading cause of child mortality across developing regions of the world. 
-A simple treatment, widely recognised as effective in reducing child mortality, 
-is given by the parallel administration of two elements: Oral Rehidratations Salts (ORS) and zinc tablets. 
+The World Health Organisation (WHO) and UNICEF recommend a simple treatment, widely recognised as effective in reducing child mortality: 
+the parallel administration of Oral Rehidratations Salts (ORS) and zinc tablets. 
 
-In remote regions of the world, even though both ORS and zinc may be available at a medicine-dispensing centre, only either of the two (or none at all) may be given as treatment, _e.g._ due to lack of medical knowledge of the dispensing person.
+Within the African continent, the recommended treatment is dispensed is less than 1 in 5 diarrhoea cases among children under five years of age, due to various issues including awareness of the recommended treatment among health personnel and caregivers. 
 
-In Zambia, the charity ColaLife has designed and introduced a _single_ pack containing both ORS and zinc: the ***co-pack***.[^1]
-The charity has also gathered data on the medicines administered by different health centres as diarrhoea treatment, both *before* (Oct 2016) and *after* (Oct 2017) the co-pack introduction.
+In Zambia, the charity ColaLife has designed and introduced, in cooperation with the Zambian government, a _single_ pack containing both ORS and zinc: the ORS&zinc ***co-pack***.[^1]
+The charity has also gathered data on the medicines dispensed by different health facilities as treatment for children diarrhoea, both *before* (Oct 2016) and *after* (Oct 2017) the co-pack introduction. In both cases, only facilities where ORS and zinc were also separately available for dispensing were considered. 
 
 <ins>**Objective**</ins>:
-This collaboration uses the above data to investigate whether a significantly higher proportion of children have been treated correctly (_i.e._, with both ORS and zinc) following the co-pack introduction.
+The collaboration draws insight from the above data to establish whether a significantly higher proportion of children have been dispensed the recommended treatment (_i.e._, with both ORS and zinc) following the co-pack introduction.
 
 [^1]: Many more details on the decade-long story, including the induced change on WHO guidelines for diarrhoea treatment, can be read [here](https://www.colalife.org/2019/07/09/success-who-adds-co-packaged-ors-and-zinc-to-its-essential-medicines-for-children/). 
 
