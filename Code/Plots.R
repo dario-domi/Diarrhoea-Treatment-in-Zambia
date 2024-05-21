@@ -6,9 +6,9 @@
 ######################################################################
 
 # Run main program to create the variables needed
-source("Single_Centre_Analysis.R")
+source("Stratified_Data_Analysis.R")
 
-# Relative path to Pictures folder
+# Relative path to the 'Pictures' folder
 picpath <- "../Pictures/"
 
 #################################################################
@@ -60,12 +60,12 @@ if (answer =="light"){
 
 ################################################################
 #
-#           BARPLOT FOR AGGLOMERATED PROPORTIONS
+#           BARPLOT FOR AGGREGATE PROPORTIONS
 #
 ###############################################################
 
 # FUNCTION TO PRODUCE PLOT
-plot_agglomerated_props <- function(){
+plot_aggregate_props <- function(){
   
   ############   GRAFICAL PARAMETERS   ##########
   
@@ -103,25 +103,26 @@ plot_agglomerated_props <- function(){
   rect(xleft = xvals[1] - half_width,
        ybottom = 0,
        xright = xvals[1] + half_width,
-       ytop = props[1,"mid"],
+       ytop = aggr_props[1,"mid"],
        col = fill_before, border = border_before, lwd=3)
   
   # Green bar
   rect(xleft = xvals[2] - half_width,
        ybottom = 0,
        xright = xvals[2] + half_width,
-       ytop = props[2,"mid"],
+       ytop = aggr_props[2,"mid"],
        col = fill_after, border = border_after, lwd=3)
   
   # Confidence Intervals
   arrows(x0 = xvals, x1 = xvals, 
-         y0 = props[,"lwr"], y1 = props[,"upr"],
+         y0 = aggr_props[,"lwr"], 
+         y1 = aggr_props[,"upr"],
          col = c(border_before, border_after), lwd = 3,
          lend = 0, ljoin = 2,
          angle = 80, length = 0.12, code=3)
   
   # x labels
-  mtext(text = rownames(props), cex=1.2,
+  mtext(text = rownames(aggr_props), cex=1.2,
         side = 1, at = xvals, las = 1,
         line = 1.3, col = fgcol)
   
@@ -131,16 +132,16 @@ plot_agglomerated_props <- function(){
 
 
 # # SAVE THE PLOT PDF
-# pdf(file = paste0(picpath, "Overall_Proportions.pdf"),  # Specify figure size and path
+# pdf(file = paste0(picpath, "Overall_Proportions", answer, ".pdf"),  # Specify figure size and path
 #     width = 10, # The width of the plot in inches
 #     height = 6)
-# plot_agglomerated_props()                               # Make plot
+# plot_aggregate_props()                               # Make plot
 # dev.off()                                               # Save plot
 
 
 #########################################################################
 #
-#   BARPLOT FOR AGGLOMERATED PROPORTIONS AND DIFFERENCE OF PROPORTIONS
+#   BARPLOT FOR AGGREGATE PROPORTIONS AND DIFFERENCE OF PROPORTIONS
 #
 #########################################################################
 
@@ -200,20 +201,20 @@ plot_diff_CI <- function(){
   
 }
 
-# # PDF: SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
-# pdf(file = paste0(picpath, "Overall_Difference_Proportions.pdf"),
+# # PDF: SAVE PLOT WITH AGGREGATE ESTIMATES AND THE CI OF THEIR DIFFERENCE
+# pdf(file = paste0(picpath, "Overall_Difference_Proportions", answer, ".pdf"),
 #     width = 10, 
 #     height = 6)
 # # Set layout of plot and save
 # mat_layout <- matrix(c(1,2), nrow = 1)
 # layout(mat = mat_layout, widths = c(2,1))
-# plot_agglomerated_props()
+# plot_aggregate_props()
 # plot_diff_CI()
 # dev.off()
 
 
-# PNG: SAVE PLOT WITH AGGLOMERATED ESTIMATES AND THE CI OF THEIR DIFFERENCE
-png(file = paste0(picpath, "Overall_Difference_Proportions.png"),
+# PNG: SAVE PLOT WITH AGGREGATE ESTIMATES AND THE CI OF THEIR DIFFERENCE
+png(file = paste0(picpath, "Overall_Difference_Proportions_", answer, ".png"),
     width = 10, 
     height = 6,
     units = "in",
@@ -221,7 +222,7 @@ png(file = paste0(picpath, "Overall_Difference_Proportions.png"),
 # Set layout of plot and save
 mat_layout <- matrix(c(1,2), nrow = 1)
 layout(mat = mat_layout, widths = c(2,1))
-plot_agglomerated_props()
+plot_aggregate_props()
 plot_diff_CI()
 dev.off()
 
@@ -234,9 +235,9 @@ dev.off()
 
 
 # CREATE FUNCTION WHICH PRODUCES THE PLOT
-# The plot is based on values in the tibbles props_HC_16 and props_HC_17
+# The plot is based on values in the tibbles facility_props_16 and facility_props_17
 
-plot_HC_props <- function(){
+plot_facility_props <- function(){
   
   ############   GRAFICAL PARAMETERS   ##########
   
@@ -270,20 +271,21 @@ plot_HC_props <- function(){
   rect(xleft = xvals - 1,
        ybottom = 0,
        xright = xvals - offset,
-       ytop = props_HC_16[,"mid"],
+       ytop = facility_props_16[,"mid"],
        col = fill_before, border = border_before, lwd=2)
   
   # Green bars
   rect(xleft = xvals + offset,
        ybottom = 0,
        xright = xvals + 1,
-       ytop = props_HC_17[,"mid"],
+       ytop = facility_props_17[,"mid"],
        col = fill_after, border = border_after, lwd=2)
   
   # Confidence Intervals blue bars
   arrows(x0 = xvals - 0.5 - offset/2, 
          x1 = xvals - 0.5 - offset/2, 
-         y0 = props_HC_16[,"lwr"], y1 = props_HC_16[,"upr"],
+         y0 = facility_props_16[,"lwr"], 
+         y1 = facility_props_16[,"upr"],
          col = border_before, lwd = 2, 
          lend = 0, ljoin = 2,
          angle = 70, length = 0.07, code=3)
@@ -291,13 +293,14 @@ plot_HC_props <- function(){
   # Confidence Intervals green bars
   arrows(x0 = xvals + 0.5 + offset/2, 
          x1 = xvals + 0.5 + offset/2, 
-         y0 = props_HC_17[,"lwr"], y1 = props_HC_17[,"upr"],
+         y0 = facility_props_17[,"lwr"], 
+         y1 = facility_props_17[,"upr"],
          col = border_after, lwd = 2, 
          lend = 0, ljoin = 2,
          angle = 70, length = 0.07, code=3)
   
   # x labels (split each facility name into two lines)
-  name <- rownames(props_HC_16)
+  name <- df16$facility
   mtext(text = gsub(" ", "\n", name), cex=1.25,
         side = 1, at = xvals, las = 1,
         line = 1.3, col = fgcol)
@@ -319,7 +322,7 @@ plot_HC_props <- function(){
 
 
 # # SAVE THE PLOT IN PDF
-# pdf(file = paste0(picpath, "Individual_Proportions.pdf"),  # Specify figure size and path
+# pdf(file = paste0(picpath, "Individual_Proportions_", ".pdf"),  # Specify figure size and path
 #     width = 12, 
 #     height = 6)
 # plot_HC_props()                                    # Make plot
@@ -327,21 +330,21 @@ plot_HC_props <- function(){
 
 
 # SAVE THE PLOT IN PNG
-png(file = paste0(picpath, "Individual_Proportions.png"),  # Specify figure size and path
+png(file = paste0(picpath, "Individual_Proportions_", answer, ".png"),  # Specify figure size and path
     width = 12, 
     height = 6,
     units = "in",
     res = 600)
-plot_HC_props()                                    # Make plot
+plot_facility_props()                                    # Make plot
 dev.off()                                          # Save plot
 
 
 # SAVE THE PLOT IN EPS
 # setEPS() 
-# postscript(paste0(picpath, "Individual_Proportions.eps"),  # Specify figure size and path
+# postscript(paste0(picpath, "Individual_Proportions", answer, ".eps"),  # Specify figure size and path
 #            width = 12, 
 #            height = 6)
-# plot_HC_props()                                    # Make plot
+# plot_facility_props()                                    # Make plot
 # dev.off()                                          # Save plot
 
 

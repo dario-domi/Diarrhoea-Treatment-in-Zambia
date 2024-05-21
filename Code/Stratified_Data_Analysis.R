@@ -1,19 +1,34 @@
 ################################################################################
 #
-# This script contains the code written by myself (Dario Domingo), for the project:
-# "Role of co-packaging in diarrhoea treatment for children in Zambia".
-# The project is part of the "Statisticians for Society" initiative, by the 
-# Royal Statistical Society. 
+# This script contains code written by myself (Dario Domingo) to undertake the 
+# project: "Role of co-packaging in diarrhoea treatment for children in Zambia".
+# The project is part of the "Statisticians for Society" initiative of the Royal
+# Statistical Society.
+# Github repo: https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia
 #
-# The analyses performed here are discussed in the manuscript associated with 
-# the project, in preparation for submission to the British Medical Journal.
+# The statistical analyses are divided into two parts:
+# - Part 1: Analysis of the aggregate data (Aggregate_Data_Analysis.R)
+# - Part 2: Analysis of the data as stratified across different health centres 
+#           (this script)
 #
-# The manuscript is divided into two parts,and accordingly there are two R scripts:
-# - Part 1: Analyses on the agglomerated data (Agglomerated_Data_Analysis.R)
-# - Part 2: Analyses on the data as stratified over the centres (this script)
+# Results of the analyses are discussed in an associated manuscript, about to be
+# submitted for publication to PLOS Global Public Health.
 #
 ################################################################################
 
+
+################################################################################
+#
+#####                      DATA AND VARIABLE LOADING                       #####
+#
+################################################################################
+
+# Set working directory (change as appropriate)
+# wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
+# setwd(wd)
+
+# Source script to load pre-processed data and additional variables
+source("Aggregate_Data_Analysis.R")
 
 
 ################################################################################
@@ -21,13 +36,6 @@
 #####            STATISTICAL TESTS/ANALYSES, STRATIFIED DATA               #####
 #
 ################################################################################
-
-# wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
-# setwd(wd)
-
-# Source script which creates all needed variables
-source("Agglomerated_Data_Analysis.R")
-
 
 ##################################################################
 #    INTERACTIVE QUESTION TO DECIDE WHETHER TO DIPLAY RESULTS
@@ -38,62 +46,86 @@ cat("\nDo you want summarised results on the stratified analyses",
 answer <- readline()
 
 
-#################################################################
-#      CONFIDENCE INTERVALS OF PROPORTION (FOR EACH CENTRE) 
+####################################################################
+#      CONFIDENCE INTERVALS OF PROPORTION (FOR EACH FACILITY) 
 
 # For each year (2016 & 2017), create one 7x3 tibble (prop_HC_16 & prop_HC_17).
 # The tibble contains the CIs of the proportion of correctly-dispensed cases (CDCs), 
 # for each of the seven facilities 
 
 # Initialise the two tibbles, including central estimate of proportions
-props_HC_16 <- df16 %>% mutate(lwr = 0,
+facility_props_16 <- df16 %>% mutate(lwr = 0,
                                mid = 100*CDCs/tot,
                                upr = 0) %>%
-                        select(lwr, mid, upr)
-props_HC_17 <- df17 %>% mutate(lwr = 0,
+                        select(facility, lwr, mid, upr) %>%
+                        as.data.frame()
+facility_props_17 <- df17 %>% mutate(lwr = 0,
                                mid = 100*CDCs/tot,
                                upr = 0) %>%
-                        select(lwr, mid, upr)
+                        select(facility, lwr, mid, upr) %>%
+                        as.data.frame()
 
-# Convert to data frames and assign facility names as row names
-props_HC_16 <- as.data.frame(props_HC_16)
-props_HC_17 <- as.data.frame(props_HC_17)
-rownames(props_HC_16) <- rownames(props_HC_17) <- df16$facility
-
-# Populate lwr and upr columns of CIs in prop_HC_16 and prop_HC_17
+# Populate lwr and upr columns of CIs in facility_props_16 and facility_props_17
 n <- nrow(df16) 
 for (i in 1:n){
+  # 2016
   xi <- df16$CDCs[i]
   ni <- df16$tot[i]
   ci <- exactci(xi, ni, conf.level = 0.95)$conf.int
-  props_HC_16[i, c("lwr", "upr")] <- as.list(100*ci)
+  facility_props_16[i, c("lwr", "upr")] <- as.list(100*ci)
   
+  #2017
   xi <- df17$CDCs[i]
   ni <- df17$tot[i]
   ci <- exactci(xi, ni, conf.level = 0.95)$conf.int
-  props_HC_17[i, c("lwr", "upr")] <- as.list(100*ci)
+  facility_props_17[i, c("lwr", "upr")] <- as.list(100*ci)
 }
 
-# Show CI for different of proportions, for each facility
+# Remove temporary variables
+rm(i, xi, ni, ci)
+
+
+# Print: CI of proportions for each facility
 if (answer=="y") {
-  cat("Difference of Proprortions and 95% Confidence Interval\n")
+  cat("Proportions of CDCs and 95% Confidence Interval\n")
+  for (i in 1:7){
+    x <- facility_props_16[i,]
+    y <- facility_props_17[i,]
+    cat(x$facility, "\n")
+    cat("    2016:", sprintf("%.3g \t(%.1f, %.1f)\n", 
+                            x$mid, x$lwr, x$upr))
+    cat("    2017:", sprintf("%.3g \t(%.1f, %.1f)\n", 
+                            y$mid, y$lwr, y$upr))
+  }
+  cat("\n")
+  rm(i, x, y)
+}
+
+
+############################################################################
+#     CONFIDENCE INTERVALS OF DIFFERENCE OF PROPORTION (FOR EACH FACILITY) 
+
+# Print CI for difference of proportions, for each facility
+if (answer=="y") {
+  cat("Difference of Proportions and 95% Confidence Interval\n")
   for (j in 1:7){
     wci <- wald2ci(df17$CDCs[j], df17$tot[j], df16$CDCs[j], df16$tot[j], 
             conf.level = 0.95, adjust = "Wald")
-    a <- wci$estimate
-    b <- wci$conf.int[1]
-    c <- wci$conf.int[2]
-    cat(df16$facility[j], ":\t", sprintf("%.2f (%.3f, %.3f)\n", a,b,c), sep="")
+    x <- 100*wci$estimate
+    y <- 100*wci$conf.int
+    cat(df16$facility[j], ":\t", sprintf("%.2g (%.1f, %.1f)\n", x, y[1], y[2]), sep="")
   }
+  rm(wci, x, y)
 }
 
 
 #################################################################
-#       CREATE TIBBLES WITH COUNTS FOR SINGLE CENTERS
+#       CREATE TABLE WITH COUNTS OF CORRECTLY/INCORRECTLY
+#       DISPENSED CASES, FOR EACH CENTRE AND YEAR
 
-# Create a 2D data frame, with last variable giving counts of cases
-# for each combination of (centre(7), copack(Y/N), correct_dispensing(Y/N)).
-# nrows = 7x2x2=28
+# First create a 2D data frame, with last variable giving counts of cases
+# for each combination of centre x copack(Y/N) x correct_dispensing(Y/N).
+# nrows(Treated_Cases) = 7x2x2=28
 #
 # Then transform into a 3D table (dim: 2x2x7) with counts in each cell.
 
@@ -120,7 +152,7 @@ for (fac in levels(Treated_Cases$Facility)){ # loop over facilities
     
     # Select appropriate dataframe according to value of cp (co-pack)
     if (cp=="Y") df <- df17
-    else df <- df16
+    else         df <- df16
     
     # Extract counts of CDCs and Incorrectly DCs
     vals <- df %>% filter(facility==fac) %>%
@@ -134,14 +166,17 @@ for (fac in levels(Treated_Cases$Facility)){ # loop over facilities
   }
 }
 
-# Transform data frame into 2x2x7 table
+# Remove temporary variables
+rm(fac, cp, vals)
+
+# Transform data frame into 2x2x7 table, for use in CMH test
 CDC_Table <- xtabs(Count ~ Correct + Co_pack + Facility, data=Treated_Cases)
 
 
 #################################################################
 #       COCHRAN-MANTEL-HAENSZEL TEST
 
-# Perform Cochran-Mantel-Haenszel TEST
+# Perform Cochran-Mantel-Haenszel test
 cmh <- mantelhaen.test(CDC_Table, alternative = "t")
 
 # Print result to std output if requested
@@ -155,7 +190,7 @@ out <- paste("\nResults of Mantel-Haenszel test:\n",
              "\n"
 )
 
-
+# Print summary of Mantel-Haenszel test results
 if (answer=="y") cat(sprintf(out, 
                              names(cmh$null.value), cmh$null.value,
                              cmh$alternative,
@@ -171,22 +206,23 @@ for (i in 1:7){
   a <- a + CDC_Table[1,1,i]*CDC_Table[2,2,i]/sum(CDC_Table[,,i])
   b <- b + CDC_Table[1,2,i]*CDC_Table[2,1,i]/sum(CDC_Table[,,i])
 }
-a/b
-
+a/b; rm(a, b)
 
 #################################################################
-#       ODDS RATIOS FOR INDIVIDUAL CENTRES AND TOTAL
+#       ODDS RATIOS FOR INDIVIDUAL CENTRES AND TOTAL ODDS RATIO
 
-OR_data <- tibble(mean  = rep(0,7),
+# Table (tibble) to be used for forest plot (see Plots.R) 
+OR_data <- tibble(facility = df16$facility,
+                  mean  = rep(0,7),
                   lower = rep(0,7),
                   upper = rep(0,7),
-                  facility = df16$facility,
                   Odds16 = rep("a",7),
                   Odds17 = rep("b",7),
                   OR = rep(NA, 7),
                   empty = rep(NA, 7)
 )
 
+# Fill values of the above tibble
 for (centre in 1:n){
   
   # 2x2 table with CDCs and not CDCs, before and after co-pack
@@ -203,7 +239,7 @@ for (centre in 1:n){
   ci <- as.numeric(ci$conf.int)
   OR <- (x1/(n1-x1)) / (x2/(n2-x2))   #  exp(mean(log(ci)))
 
-  # CDCs/(Not CDCs) cases, for 2016 and 2017
+  # Create strings of CDCs/(Not CDCs) counts, for 2016 and 2017
   s1 <- as.character(x1)
   s2 <- as.character(n1-x1)
   str17 <- paste0(s1, "/", s2)
@@ -211,7 +247,7 @@ for (centre in 1:n){
   s2 <- as.character(n2-x2)
   str16 <- paste0(s1, "/", s2)
 
-  # Populate the tibble
+  # Populate the OR_data tibble
   OR_data$mean[centre]  <- OR
   OR_data$lower[centre] <- ci[1]
   OR_data$upper[centre] <- ci[2]
