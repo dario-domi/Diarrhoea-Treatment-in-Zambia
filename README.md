@@ -20,7 +20,6 @@ The project focuses on dispensing behaviour of the recommended (and often life-s
 &emsp; &emsp;
 <img src='Pictures/Logos/Kit_Yamoyo.jpg', width='325'>
 </p>
-</br>
 
 
 ## Project Overview
@@ -56,4 +55,12 @@ The `Code` folder contains three R scripts, which are extensively commented. A b
 * [`Stratified_Data_Analysis.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Stratified_Data_Analysis.R): Analyses performed on the individual facilities and on the data as stratified across facilities.   
 * [`Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Plots.R) Code creating the figures used in the manuscript.
 
-## Run the scripts in your own R/RStudio
+## Download/Clone the Repository
+Follow the relevant step below to download or clone the repository onto your local machine.
+
+1. <ins>**Download**</ins>: Click onto the green `<> Code` button and select 'Download ZIP'.
+2. <ins>**Clone**</ins>: Open Git Bash or the Windows PowerShell if using Windows (or the terminal if using Linux/Mac), `cd` into the desired folder and type
+   `git clone https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia.git`.
+   
+You can now run the scripts in your own R/RStudio. 
+
