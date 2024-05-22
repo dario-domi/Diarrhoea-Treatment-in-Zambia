@@ -19,23 +19,10 @@
 
 ################################################################################
 #
-#####                      DATA AND VARIABLE LOADING                       #####
+####     PRELIMINARY OPERATIONS (interactive question, variable loading)    ####
 #
 ################################################################################
 
-# Set working directory (change as appropriate)
-# wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
-# setwd(wd)
-
-# Source script to load pre-processed data and additional variables
-source("Aggregate_Data_Analysis.R")
-
-
-################################################################################
-#
-#####            STATISTICAL TESTS/ANALYSES, STRATIFIED DATA               #####
-#
-################################################################################
 
 ##################################################################
 #    INTERACTIVE QUESTION TO DECIDE WHETHER TO DIPLAY RESULTS
@@ -46,6 +33,25 @@ cat("\nDo you want summarised results on the stratified analyses",
 answer <- readline()
 
 
+###############################################
+#    LOAD VARIABLES FROM PREVIOUS SCRIPT 
+
+# Set working directory (change as appropriate)
+# wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
+# setwd(wd)
+
+# Source script to load pre-processed data and additional variables
+source("Aggregate_Data_Analysis.R")
+
+#############################################
+
+
+################################################################################
+#
+#####            STATISTICAL TESTS/ANALYSES, STRATIFIED DATA               #####
+#
+################################################################################
+
 ####################################################################
 #      CONFIDENCE INTERVALS OF PROPORTION (FOR EACH FACILITY) 
 
@@ -55,15 +61,15 @@ answer <- readline()
 
 # Initialise the two tibbles, including central estimate of proportions
 facility_props_16 <- df16 %>% mutate(lwr = 0,
-                               mid = 100*CDCs/tot,
-                               upr = 0) %>%
-                        select(facility, lwr, mid, upr) %>%
-                        as.data.frame()
+                                     mid = 100*CDCs/tot,
+                                     upr = 0) %>%
+                              select(facility, lwr, mid, upr) %>%
+                              as.data.frame()
 facility_props_17 <- df17 %>% mutate(lwr = 0,
-                               mid = 100*CDCs/tot,
-                               upr = 0) %>%
-                        select(facility, lwr, mid, upr) %>%
-                        as.data.frame()
+                                     mid = 100*CDCs/tot,
+                                     upr = 0) %>%
+                              select(facility, lwr, mid, upr) %>%
+                              as.data.frame()
 
 # Populate lwr and upr columns of CIs in facility_props_16 and facility_props_17
 n <- nrow(df16) 

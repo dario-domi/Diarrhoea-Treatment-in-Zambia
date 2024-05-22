@@ -202,8 +202,8 @@ exp(log(p2/p1) + c(-1,1) * qnorm(0.975)*s)
 
 ###############################################################################
 
-# Below some online references and equivalent/alternative analyses to
-# a couple of points above
+# Below are some equivalent/alternative analyses to a couple 
+# of previous points, and a list of online references.
 
 # Same test as prop.test, a few more output details
 library(rstatix)

@@ -1,9 +1,12 @@
-######################################################################
-# This script produces the plots associated with the project 
-# in collaboration with Cola-Life. 
-# Run the script after having run "Analyses_Zambia.R", 
-# so that all needed variables are created.
-######################################################################
+################################################################################
+# This script produces the plots associated with the project
+# "Role of co-packaging in diarrhoea treatment for children in Zambia".
+# Project in collaboration with the UK charity ColaLife, as part of the 
+# "Statisticians for Society" initiative of the Royal Statistical Society.
+#
+# Github repo: https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia
+#
+################################################################################
 
 # Run main program to create the variables needed
 source("Stratified_Data_Analysis.R")
@@ -14,7 +17,7 @@ picpath <- "../Pictures/"
 #################################################################
 #      INTERACTIVE QUESTION TO CHOOSE COLOUR BACKGROUND
 
-# Ask the user if they want results to be printed to standard output
+# Ask the user if they want plots to have dark or light background
 cat("\nDo you want barplots with dark- or light- background to be produced?",
     "\nType 'dark' or 'light':\n")
 answer <- readline()
@@ -131,12 +134,12 @@ plot_aggregate_props <- function(){
 }
 
 
-# # SAVE THE PLOT PDF
-# pdf(file = paste0(picpath, "Overall_Proportions", answer, ".pdf"),  # Specify figure size and path
+# # PDF: SAVE THE PLOT
+# pdf(file = paste0(picpath, "Overall_Proportions", answer, ".pdf"),
 #     width = 10, # The width of the plot in inches
 #     height = 6)
-# plot_aggregate_props()                               # Make plot
-# dev.off()                                               # Save plot
+# plot_aggregate_props()        # Make the plot
+# dev.off()                     # Save the plot
 
 
 #########################################################################
@@ -154,8 +157,8 @@ plot_diff_CI <- function(){
   
   par(bg = bgcol,
       #mai=c(0.4, 0.5, 0.4, 2), # small bottom&top margins
-      mai=c(0.8, 0.5, 0.8, 2), # This leaves "large" bottom&top margins (old right margin=2)
-      mgp=c(1,0.5,0)) # agjust mgp[2] for distance between axis and numbers
+      mai=c(0.8, 0.5, 0.8, 2),  # This leaves "large" bottom&top margins (old right margin=2)
+      mgp=c(1,0.5,0))           # adjust mgp[2] for distance between axis and numbers
   
   # Set axis ranges, without plot of single point (mid estimate)
   plot(x = 0, y = 0, ylim = c(-100,100), 
@@ -184,7 +187,7 @@ plot_diff_CI <- function(){
        labels = paste0(seq(-100, 100, 20), "%"),
        col.axis = fgcol)
   
-  # y label (on different lines, spaces from each other)
+  # y label (spread over different lines, spaced from each other)
   label <- list("   95% CI", 
                 "       for", 
                 " difference", 
@@ -193,25 +196,13 @@ plot_diff_CI <- function(){
                 "  of CDCs")
   L <- length(label)           # number of lines in ylabel
   levs <- (L-1):0 - (L-1)/2    # the integer "levels" at which each line of text is written
-  space <- 13.5                  # space between two lines
+  space <- 13.5                # space between two lines
   for (i in 1:L)
     mtext(text = label[[i]], at = space*levs[i],
           cex=1.15, side = 4, las = 1,
           line = 3.7, col = fgcol)
   
 }
-
-# # PDF: SAVE PLOT WITH AGGREGATE ESTIMATES AND THE CI OF THEIR DIFFERENCE
-# pdf(file = paste0(picpath, "Overall_Difference_Proportions", answer, ".pdf"),
-#     width = 10, 
-#     height = 6)
-# # Set layout of plot and save
-# mat_layout <- matrix(c(1,2), nrow = 1)
-# layout(mat = mat_layout, widths = c(2,1))
-# plot_aggregate_props()
-# plot_diff_CI()
-# dev.off()
-
 
 # PNG: SAVE PLOT WITH AGGREGATE ESTIMATES AND THE CI OF THEIR DIFFERENCE
 png(file = paste0(picpath, "Overall_Difference_Proportions_", answer, ".png"),
@@ -225,6 +216,18 @@ layout(mat = mat_layout, widths = c(2,1))
 plot_aggregate_props()
 plot_diff_CI()
 dev.off()
+
+
+# # PDF: SAVE PLOT WITH AGGREGATE ESTIMATES AND THE CI OF THEIR DIFFERENCE
+# pdf(file = paste0(picpath, "Overall_Difference_Proportions", answer, ".pdf"),
+#     width = 10, 
+#     height = 6)
+# # Set layout of plot and save
+# mat_layout <- matrix(c(1,2), nrow = 1)
+# layout(mat = mat_layout, widths = c(2,1))
+# plot_aggregate_props()
+# plot_diff_CI()
+# dev.off()
 
 
 ###############################################################
@@ -321,22 +324,22 @@ plot_facility_props <- function(){
 }
 
 
-# # SAVE THE PLOT IN PDF
-# pdf(file = paste0(picpath, "Individual_Proportions_", ".pdf"),  # Specify figure size and path
-#     width = 12, 
-#     height = 6)
-# plot_HC_props()                                    # Make plot
-# dev.off()                                          # Save plot
-
-
 # SAVE THE PLOT IN PNG
-png(file = paste0(picpath, "Individual_Proportions_", answer, ".png"),  # Specify figure size and path
+png(file = paste0(picpath, "Individual_Proportions_", answer, ".png"),
     width = 12, 
     height = 6,
     units = "in",
     res = 600)
-plot_facility_props()                                    # Make plot
-dev.off()                                          # Save plot
+plot_facility_props()   # Make the plot
+dev.off()               # Save the plot
+
+
+# # SAVE THE PLOT IN PDF
+# pdf(file = paste0(picpath, "Individual_Proportions_", ".pdf"),  # Specify figure size and path
+#     width = 12, 
+#     height = 6)
+# plot_HC_props()    
+# dev.off()   
 
 
 # SAVE THE PLOT IN EPS
@@ -344,8 +347,8 @@ dev.off()                                          # Save plot
 # postscript(paste0(picpath, "Individual_Proportions", answer, ".eps"),  # Specify figure size and path
 #            width = 12, 
 #            height = 6)
-# plot_facility_props()                                    # Make plot
-# dev.off()                                          # Save plot
+# plot_facility_props() 
+# dev.off()
 
 
 ###############################################################
@@ -419,14 +422,6 @@ plot_FP <- function(){
 }
 
 
-# # PDF: SAVE FOREST PLOT OF ODDS RATIOS
-# pdf(file = paste0(picpath, "ForestPlot.pdf"),
-#     width = 9, 
-#     height = 5.4)
-# plot_FP()
-# dev.off()
-
-
 # PNG: SAVE FOREST PLOT OF ODDS RATIOS
 png(file = paste0(picpath, "ForestPlot.png"),
     width = 9, 
@@ -435,4 +430,12 @@ png(file = paste0(picpath, "ForestPlot.png"),
     units = "in")
 plot_FP()
 dev.off()
+
+
+# # PDF: SAVE FOREST PLOT OF ODDS RATIOS
+# pdf(file = paste0(picpath, "ForestPlot.pdf"),
+#     width = 9, 
+#     height = 5.4)
+# plot_FP()
+# dev.off()
 
