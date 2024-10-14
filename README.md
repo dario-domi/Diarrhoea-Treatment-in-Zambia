@@ -55,6 +55,7 @@ The `Code` folder contains three R scripts, which are extensively commented. A b
 * [`Stratified_Data_Analysis.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Stratified_Data_Analysis.R): Analyses performed on the individual facilities and on the data as stratified across facilities.   
 * [`Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Plots.R) Code creating the figures used in the manuscript.
 
+
 ## Download/Clone the Repository
 Follow the relevant step below to download or clone the repository onto your local machine.
 
