@@ -1,11 +1,12 @@
 # Folders to be ignored
 Documents/
 Old_Pics/
+Zoom/
 Data/*
 *.zip
 
 # Files to be ignored
-Code/Additional_Attempts.R
+Code/Old_Code/
 *.txt
 *Copy.pdf
 *Old.pdf
