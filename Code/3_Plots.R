@@ -274,21 +274,21 @@ plot_facility_props <- function(){
   rect(xleft = xvals - 1,
        ybottom = 0,
        xright = xvals - offset,
-       ytop = facility_props_16[,"mid"],
+       ytop = props_16[,"mid"],
        col = fill_before, border = border_before, lwd=2)
   
   # Green bars
   rect(xleft = xvals + offset,
        ybottom = 0,
        xright = xvals + 1,
-       ytop = facility_props_17[,"mid"],
+       ytop = props_17[,"mid"],
        col = fill_after, border = border_after, lwd=2)
   
   # Confidence Intervals blue bars
   arrows(x0 = xvals - 0.5 - offset/2, 
          x1 = xvals - 0.5 - offset/2, 
-         y0 = facility_props_16[,"lwr"], 
-         y1 = facility_props_16[,"upr"],
+         y0 = props_16[,"lwr"], 
+         y1 = props_16[,"upr"],
          col = border_before, lwd = 2, 
          lend = 0, ljoin = 2,
          angle = 70, length = 0.07, code=3)
@@ -296,20 +296,19 @@ plot_facility_props <- function(){
   # Confidence Intervals green bars
   arrows(x0 = xvals + 0.5 + offset/2, 
          x1 = xvals + 0.5 + offset/2, 
-         y0 = facility_props_17[,"lwr"], 
-         y1 = facility_props_17[,"upr"],
+         y0 = props_17[,"lwr"], 
+         y1 = props_17[,"upr"],
          col = border_after, lwd = 2, 
          lend = 0, ljoin = 2,
          angle = 70, length = 0.07, code=3)
   
   # x labels (split each facility name into two lines)
-  name <- df16$facility
-  mtext(text = gsub(" ", "\n", name), cex=1.25,
+  mtext(text = gsub(" ", "\n", facilities), cex=1.25,
         side = 1, at = xvals, las = 1,
         line = 1.3, col = fgcol)
   
   # Title
-  mtext("Proportion of CDCs by Facility", 
+  mtext("Correct Dispensation Rates by Facility", 
         side = 3, font=3, col = fgcol, line = 0.7, cex=2)
   
   # Legend
