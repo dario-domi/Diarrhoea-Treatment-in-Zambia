@@ -1,6 +1,6 @@
 # Correct dispensation of diarrhoea treatment in Zambian children
 
-This repository contains all code used to perform the statistical analyses reported in the following publication [link to be inserted once published].
+This repository contains the code used to perform the statistical analyses reported in the following publication [link to be inserted once published].
 
 ## Project Background
 The project is a collaboration between myself and the UK charity [ColaLife](https://www.colalife.org/), as part of the [Statisticians for Society](https://rss.org.uk/membership/volunteering-and-promoting/statisticians-for-society-initiative/) initiative of the Royal Statistical Society. I am the lead volunteer statistician for the project.
@@ -53,10 +53,14 @@ A scientific article with the results of the analyses is being submitted to an i
 
 The `Code` folder contains four R scripts. These are are extensively commented, however a brief overview of each script is included below for convenience.  
 * [`1_Data_Preparation.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/1_Data_Preparation.R): Reads and cleans the data, preparing them in a format useful for subsequent statistical analyses.
-* [`2_Statistical_Analyses.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/2_Statistical_Analyses.R): Performs the statistical analyses reported in the publication. Prints results to output in a convenient format.   
+* [`2_Statistical_Analyses.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/2_Statistical_Analyses.R): Performs the statistical analyses reported in the publication. 
 * [`3_Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/3_Plots.R) Creates and saves the figures used in the manuscript.
 * [`Intraclass_Corr_Coeff.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Intraclass_Corr_Coeff.R) Defines functions to compute Intraclass Correlation Coefficient via different approaches.
 
+Each script can be run independently of all others.
+
+An interactive question at the start of each script allows the user to decide: 1) whether to print results to standard output in a readable format (Scripts 1 & 2); 
+2) whether plots should have a dark or light background (Script 3).
 
 ## Download/Clone the Repository
 Follow the relevant step below to download or clone the repository onto your local machine.
