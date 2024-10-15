@@ -1,5 +1,6 @@
 # Correct dispensation of diarrhoea treatment in Zambian children
 
+This repository contains all code used to perform the statistical analyses reported in the following publication [link to be inserted once published].
 
 ## Project Background
 The project is a collaboration between myself and the UK charity [ColaLife](https://www.colalife.org/), as part of the [Statisticians for Society](https://rss.org.uk/membership/volunteering-and-promoting/statisticians-for-society-initiative/) initiative of the Royal Statistical Society. I am the lead volunteer statistician for the project.
@@ -53,7 +54,7 @@ A scientific article with the results of the analyses is being submitted to an i
 The `Code` folder contains four R scripts. These are are extensively commented, however a brief overview of each script is included below for convenience.  
 * [`1_Data_Preparation.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/1_Data_Preparation.R): Reads and cleans the data, preparing them in a format useful for subsequent statistical analyses.
 * [`2_Statistical_Analyses.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/2_Statistical_Analyses.R): Performs the statistical analyses reported in the publication. Prints results to output in a convenient format.   
-* [`3_Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/3_Plots.R) Creating and saves the figures used in the manuscript.
+* [`3_Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/3_Plots.R) Creates and saves the figures used in the manuscript.
 * [`Intraclass_Corr_Coeff.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Intraclass_Corr_Coeff.R) Defines functions to compute Intraclass Correlation Coefficient via different approaches.
 
 
