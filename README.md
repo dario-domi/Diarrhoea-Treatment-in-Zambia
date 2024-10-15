@@ -51,13 +51,12 @@ A scientific article with the results of the analyses is being submitted to an i
    * [`Code folder`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/tree/master/Code): contains the R code to perform the statistical analyses of the project and produce associated visualisations.
    * [`Pictures folder`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/tree/master/Pictures): Figures produced by the R code and used within the submitted manuscript.
 
-The `Code` folder contains four R scripts. These are are extensively commented, however a brief overview of each script is included below for convenience.  
+The `Code` folder contains four R scripts, which can be run independently of each other.
+The scripts are are extensively commented, however a brief overview of each script is included below for convenience.  
 * [`1_Data_Preparation.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/1_Data_Preparation.R): Reads and cleans the data, preparing them in a format useful for subsequent statistical analyses.
 * [`2_Statistical_Analyses.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/2_Statistical_Analyses.R): Performs the statistical analyses reported in the publication. 
 * [`3_Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/3_Plots.R) Creates and saves the figures used in the manuscript.
 * [`Intraclass_Corr_Coeff.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Intraclass_Corr_Coeff.R) Defines functions to compute Intraclass Correlation Coefficient via different approaches.
-
-Each script can be run independently of all others.
 
 An interactive question at the start of each script allows the user to decide:<br/> 
 &emsp; 1) whether to print results to standard output in a readable format (Scripts 1 & 2)<br/>
