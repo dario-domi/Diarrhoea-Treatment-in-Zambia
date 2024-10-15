@@ -11,7 +11,7 @@
 # Github repo: https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia
 #
 # The present script loads the data and prepares them in a format useful to 
-# carry out the relevant statistical analyses ("Analysis.R" script).
+# carry out the relevant statistical analyses ("2_Statistical_Analysis.R" script).
 # Upon running the script, an interactive question pops up, asking the user 
 # whether basic summaries about the data should be printed to output.
 #
@@ -41,7 +41,7 @@ answer <- readline()
 #    LOAD LIBRARIES AND DATA     
 
 library(readxl)
-library(dplyr)
+suppressMessages(library(dplyr))
 
 # Set working directory (change as appropriate)
 # wd <- "/Users/Durham/Desktop/Academia/Other Projects/Statisticians4Society/Code/"
@@ -166,30 +166,47 @@ for(fac in facilities){
 
 ################################################################################
 #
-#####                     OVERVIEW OF THE DATA                             #####
+#####                  PRINT OVERVIEW OF THE DATA                          #####
 #
 ################################################################################
 
+if (answer=="y"){
+  
+  cat("----------------------------------------------------------------------\n\n")
+  
+  ########### OVERVIEW OF AGGREGATE DATA
+  
+  x1 <- sum(df16$CDCs)    # correctly-dispensed cases in 2016
+  x2 <- sum(df17$CDCs)    # correctly-dispensed cases in 2017
+  n1 <- sum(df16$tot)     # total cases in 2016
+  n2 <- sum(df17$tot)     # total cases in 2017
+  p1 <- x1/n1             # correct dispensing rate in 2016
+  p2 <- x2/n2             # correct dispensing rate in 2017
+  
+  cat("** Aggregate data **\n")
+  cat(sprintf("\tOct 2016:  %d correctly dispensed out of %d (%.3g%%)\n", x1, n1, 100*p1),  #  75 out of 171
+      sprintf("\tOct 2017:  %d correctly dispensed out of %d (%.3g%%)\n", x2, n2, 100*p2))  # 342 out of 394
+  
+  
+  ########### CORRECT DISPENSING BY FACILITY
+  
+  cat("\n\n** Disaggregation by facility **\n\n")
+  for (fac in facilities){
+    x1 <- df16 %>% filter(facility == fac) %>% pull(CDCs)    # correctly-dispensed cases in 2016
+    n1 <- df16 %>% filter(facility == fac) %>% pull(tot)     # correctly-dispensed cases in 2017
+    x2 <- df17 %>% filter(facility == fac) %>% pull(CDCs)    # correctly-dispensed cases in 2016
+    n2 <- df17 %>% filter(facility == fac) %>% pull(tot)     # total cases in 2016
+    p1 <- x1/n1                                              # correct dispensing rate in 2016
+    p2 <- x2/n2                                              # correct dispensing rate in 2017
+    
+    cat(sprintf("%s\n", fac),
+        sprintf("\tOct 2016:  %d out of %d (%.3g%%)\n", x1, n1, 100*p1),
+        sprintf("\tOct 2017:  %d out of %d (%.3g%%)\n", x2, n2, 100*p2))
+  }
+  cat("\n")
+}
 
-#############################################
-#   SHORTER NAMES FOR RELEVANT VARIABLES  
-
-x1 <- sum(df16$CDCs)    # correctly-dispensed cases in 2016
-x2 <- sum(df17$CDCs)    # correctly-dispensed cases in 2017
-n1 <- sum(df16$tot)     # total cases in 2016
-n2 <- sum(df17$tot)     # total cases in 2017
-p1 <- x1/n1             # sample proportion of correct dispensation in 2016
-p2 <- x2/n2             # sample proportion of correct dispensation in 2017
-
-# Print to std output: Overview of aggregate data
-s <- "Aggregate data\n"
-s1 <- sprintf("Oct 2016:  %d correctly-dispensed cases out of %d\n", x1, n1)  #  75 out of 171
-s2 <- sprintf("Oct 2017: %d correctly-dispensed cases out of %d\n\n", x2, n2) # 342 out of 394
-if (answer=="y") 
-  cat("\n", s, s1, s2, sep = "")
-
-# Can also add: Correct dispensation by facility:
-
+  
 ########################################
 #             END 
 #             OF 
