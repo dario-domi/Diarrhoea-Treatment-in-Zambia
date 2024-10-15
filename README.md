@@ -59,8 +59,9 @@ The `Code` folder contains four R scripts. These are are extensively commented, 
 
 Each script can be run independently of all others.
 
-An interactive question at the start of each script allows the user to decide: 1) whether to print results to standard output in a readable format (Scripts 1 & 2); 
-2) whether plots should have a dark or light background (Script 3).
+An interactive question at the start of each script allows the user to decide:<br/> 
+&emsp; 1) whether to print results to standard output in a readable format (Scripts 1 & 2)<br/>
+&emsp; 2) whether plots should have a dark or light background (Script 3).
 
 ## Download/Clone the Repository
 Follow the relevant step below to download or clone the repository onto your local machine.
