@@ -11,7 +11,7 @@ The project is a collaboration between myself and the UK charity [ColaLife](http
 <img src='Pictures/Logos/RSS_logo.png' width='130'>
 </p>
 </br>
-The project focuses on dispensing behaviour of the recommended (and often life-saving) diarrhoea treatment for children, in rural regions of Zambia. More details follow.
+The project focuses on dispensing behaviour of the WHO/UNICEF recommended diarrhoea treatment for children, in rural regions of Zambia. More details follow.
 
 </br>
 </br>
@@ -50,10 +50,11 @@ A scientific article with the results of the analyses is being submitted to an i
    * [`Code folder`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/tree/master/Code): contains the R code to perform the statistical analyses of the project and produce associated visualisations.
    * [`Pictures folder`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/tree/master/Pictures): Figures produced by the R code and used within the submitted manuscript.
 
-The `Code` folder contains three R scripts, which are extensively commented. A brief overview of each script is included below for convenience.  
-* [`Aggregate_Data_Analysis.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Aggregate_Data_Analysis.R): Analyses performed on the data, after aggregation over all health facilities.   
-* [`Stratified_Data_Analysis.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Stratified_Data_Analysis.R): Analyses performed on the individual facilities and on the data as stratified across facilities.   
-* [`Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Plots.R) Code creating the figures used in the manuscript.
+The `Code` folder contains four R scripts. These are are extensively commented, however a brief overview of each script is included below for convenience.  
+* [`1_Data_Preparation.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/1_Data_Preparation.R): Reads and cleans the data, preparing them in a format useful for subsequent statistical analyses.
+* [`2_Statistical_Analyses.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/2_Statistical_Analyses.R): Performs the statistical analyses reported in the publication. Prints results to output in a convenient format.   
+* [`3_Plots.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/3_Plots.R) Creating and saves the figures used in the manuscript.
+* [`Intraclass_Corr_Coeff.R`](https://github.com/dario-domi/Diarrhoea-Treatment-in-Zambia/blob/master/Code/Intraclass_Corr_Coeff.R) Defines functions to compute Intraclass Correlation Coefficient via different approaches.
 
 
 ## Download/Clone the Repository
