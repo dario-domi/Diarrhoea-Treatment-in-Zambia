@@ -1,7 +1,5 @@
 # Correct dispensation of diarrhoea treatment in Zambian children
 
-This repository contains the code used to perform the statistical analyses reported in the following publication [link to be inserted once published].
-
 ## Project Background
 The project is a collaboration between myself and the UK charity [ColaLife](https://www.colalife.org/), as part of the [Statisticians for Society](https://rss.org.uk/membership/volunteering-and-promoting/statisticians-for-society-initiative/) initiative of the Royal Statistical Society. I am the lead volunteer statistician for the project.
 
